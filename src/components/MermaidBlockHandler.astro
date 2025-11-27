@@ -1,0 +1,335 @@
+<script>
+    import { animate } from "motion";
+
+    /**
+     * Initializes click handlers for mermaid blocks to enable expand/collapse functionality.
+     * Finds all .mermaid elements and adds click handlers to show/hide mermaid source.
+     */
+    function initMermaidBlocks() {
+        const mermaidBlocks = document.querySelectorAll(".mermaid");
+
+        mermaidBlocks.forEach((mermaidBlock) => {
+            // Skip if already wrapped
+            if (
+                mermaidBlock.parentElement?.classList.contains(
+                    "mermaid-block-wrapper",
+                )
+            ) {
+                return;
+            }
+
+            // Try to find the source code from multiple possible locations
+            let mermaidSource: string | null = null;
+            let sourceElement: Element | null = null;
+
+            // Method 1: Check for source-view sibling
+            const prevSibling = mermaidBlock.previousElementSibling;
+            if (prevSibling && prevSibling.classList.contains("source-view")) {
+                sourceElement = prevSibling;
+                const sourceCode = sourceElement.querySelector("code");
+                if (sourceCode) {
+                    mermaidSource = sourceCode.textContent;
+                }
+            }
+
+            // Method 2: Check parent wrapper for data-source attribute
+            if (!mermaidSource) {
+                let parent = mermaidBlock.parentElement;
+                while (parent && !mermaidSource) {
+                    if (parent.dataset && parent.dataset.source) {
+                        mermaidSource = parent.dataset.source;
+                        break;
+                    }
+                    parent = parent.parentElement;
+                }
+            }
+
+            // Method 3: Check if there's a pre > code sibling
+            if (!mermaidSource) {
+                const preSibling = mermaidBlock.previousElementSibling;
+                if (preSibling && preSibling.tagName === "PRE") {
+                    const code = preSibling.querySelector("code");
+                    if (code) {
+                        mermaidSource = code.textContent;
+                        sourceElement = preSibling;
+                    }
+                }
+            }
+
+            if (!mermaidSource) {
+                console.warn(
+                    "No mermaid source found for block:",
+                    mermaidBlock,
+                );
+                return;
+            }
+
+            // Add click handler
+            mermaidBlock.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const isExpanded =
+                    mermaidBlock.parentElement?.classList.contains(
+                        "mermaid-block-wrapper",
+                    );
+
+                if (isExpanded) {
+                    // Collapse - unwrap
+                    const wrapper = mermaidBlock.parentElement;
+                    if (!wrapper) return;
+
+                    const header = wrapper.querySelector(".code-block-header");
+                    const sourceDiv = wrapper.querySelector(".mermaid-source");
+
+                    if (!header || !sourceDiv) return;
+
+                    // Animate out
+                    const animations = [
+                        animate(
+                            header,
+                            { height: 0, opacity: 0 },
+                            { duration: 0.3 },
+                        ),
+                        animate(
+                            sourceDiv,
+                            { height: 0, opacity: 0, padding: 0 },
+                            { duration: 0.3 },
+                        ),
+                        animate(
+                            wrapper,
+                            {
+                                backgroundColor: "rgba(0,0,0,0)",
+                                borderColor: "rgba(0,0,0,0)",
+                                borderWidth: 0,
+                            },
+                            { duration: 0.3 },
+                        ),
+                    ];
+
+                    Promise.all(animations.map((a) => a.finished)).then(() => {
+                        // Restore source-view before mermaid block if it exists
+                        if (wrapper.parentNode) {
+                            if (
+                                sourceElement &&
+                                (sourceElement as HTMLElement).style
+                            ) {
+                                (sourceElement as HTMLElement).style.display =
+                                    "";
+                            }
+                            wrapper.parentNode.insertBefore(
+                                mermaidBlock,
+                                wrapper,
+                            );
+                            wrapper.remove();
+                        }
+                    });
+                } else {
+                    // Expand - wrap with header and source
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "mermaid-block-wrapper";
+                    // Initial wrapper styles
+                    wrapper.style.borderWidth = "0px";
+                    wrapper.style.backgroundColor = "transparent";
+                    wrapper.style.overflow = "hidden";
+
+                    // Create header
+                    const header = document.createElement("div");
+                    header.className = "code-block-header";
+                    // Initial header styles
+                    header.style.height = "0px";
+                    header.style.opacity = "0";
+                    header.style.overflow = "hidden";
+
+                    const langLabel = document.createElement("span");
+                    langLabel.className = "code-block-language";
+                    langLabel.textContent = "mermaid";
+
+                    const copyBtn = document.createElement("button");
+                    copyBtn.className = "code-block-copy-btn";
+                    copyBtn.setAttribute(
+                        "aria-label",
+                        "Copy Mermaid to clipboard",
+                    );
+                    copyBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          `;
+
+                    copyBtn.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            if (mermaidSource) {
+                                await navigator.clipboard.writeText(
+                                    mermaidSource,
+                                );
+                                copyBtn.classList.add("copied");
+                                copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  `;
+                                setTimeout(() => {
+                                    copyBtn.classList.remove("copied");
+                                    copyBtn.classList.add("reverting");
+                                    copyBtn.innerHTML = `
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    `;
+                                    setTimeout(
+                                        () =>
+                                            copyBtn.classList.remove(
+                                                "reverting",
+                                            ),
+                                        300,
+                                    );
+                                }, 2000);
+                            }
+                        } catch (err) {
+                            console.error("Failed to copy Mermaid:", err);
+                        }
+                    });
+
+                    header.appendChild(langLabel);
+                    header.appendChild(copyBtn);
+
+                    // Create source code div
+                    const sourceDiv = document.createElement("div");
+                    sourceDiv.className = "mermaid-source";
+                    // Initial source styles
+                    sourceDiv.style.height = "0px";
+                    sourceDiv.style.opacity = "0";
+                    sourceDiv.style.overflow = "hidden";
+                    sourceDiv.style.padding = "0px";
+
+                    const code = document.createElement("code");
+                    code.textContent = mermaidSource;
+                    sourceDiv.appendChild(code);
+
+                    // Hide the original source element if it exists
+                    if (sourceElement && (sourceElement as HTMLElement).style) {
+                        (sourceElement as HTMLElement).style.display = "none";
+                    }
+
+                    // Wrap
+                    if (mermaidBlock.parentNode) {
+                        mermaidBlock.parentNode.insertBefore(
+                            wrapper,
+                            mermaidBlock,
+                        );
+                        wrapper.appendChild(header);
+                        wrapper.appendChild(sourceDiv);
+                        wrapper.appendChild(mermaidBlock);
+                    }
+
+                    // Stop propagation on wrapper clicks
+                    wrapper.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                    });
+
+                    // Trigger animation
+                    animate(
+                        header,
+                        { height: "auto", opacity: 1 },
+                        { duration: 0.3 },
+                    );
+                    animate(
+                        sourceDiv,
+                        { height: "auto", opacity: 1, padding: "1rem" },
+                        { duration: 0.3 },
+                    );
+                    animate(
+                        wrapper,
+                        {
+                            backgroundColor: "#f9fafb",
+                            borderColor: "#e5e7eb",
+                            borderWidth: "1px",
+                        },
+                        { duration: 0.3 },
+                    );
+                }
+            });
+        });
+    }
+
+    // Initialize on page load and after View Transitions
+    document.addEventListener("astro:page-load", initMermaidBlocks);
+</script>
+
+<style>
+    /* Mermaid diagrams */
+    :global(.mermaid) {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 1.5rem auto; /* Center horizontally */
+        display: block; /* Ensure it takes up width to allow centering */
+        width: 100%; /* Full width for hover area */
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    :global(.mermaid:hover) {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    /* Mermaid block wrapper when expanded */
+    :global(.mermaid-block-wrapper) {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 1px solid transparent;
+        border-width: 0;
+        background-color: transparent;
+        margin: 1.5rem auto;
+        max-width: 100%;
+    }
+
+    :global(.mermaid-block-wrapper .code-block-header) {
+        border-bottom: 1px solid #d1d5db;
+        overflow: hidden;
+        padding: 0;
+    }
+
+    :global(.mermaid-source) {
+        background-color: #f9fafb;
+        padding: 0;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.875rem;
+        overflow-x: auto;
+        overflow-y: auto;
+        border-bottom: 1px solid #e5e7eb;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    :global(.mermaid-source::-webkit-scrollbar) {
+        display: none;
+    }
+
+    :global(.mermaid-source code) {
+        background: none;
+        padding: 0;
+        white-space: pre;
+        display: block;
+    }
+
+    :global(.mermaid-block-wrapper .mermaid) {
+        background-color: white;
+        margin: 0 auto;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        transition:
+            background-color 0.3s ease-in-out,
+            padding 0.3s ease-in-out;
+    }
+
+    :global(.mermaid-block-wrapper .mermaid:hover) {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+</style>

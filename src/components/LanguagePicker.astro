@@ -1,0 +1,214 @@
+---
+import { getLanguages } from "../../config.language";
+
+const languages = getLanguages();
+---
+
+<div class="language-picker">
+  <select id="lang-select">
+    {
+      Object.entries(languages).map(([code, label]) => (
+        <option value={code}>{label}</option>
+      ))
+    }
+  </select>
+</div>
+<script>
+  import { getLanguages, getDefaultLanguage } from "../../config.language";
+  import { animate, type AnimationControls } from "motion";
+
+  const languages = getLanguages();
+  const defaultLang = getDefaultLanguage();
+
+  // Animation state
+  let currentAnimation: AnimationControls | null = null;
+  let isAnimating = false;
+
+  function isValidLanguageCode(code: string) {
+    return code in languages;
+  }
+
+  function getLanguageFromLocalStorage(): string {
+    const stored = localStorage.getItem("lang");
+    if (stored && isValidLanguageCode(stored)) {
+      return stored;
+    } else {
+      localStorage.setItem("lang", defaultLang);
+      return defaultLang;
+    }
+  }
+
+  async function animateLanguageChange(
+    newContent: HTMLElement,
+    oldContent: HTMLElement | null,
+  ) {
+    // Cancel any in-progress animation to prevent race conditions
+    if (currentAnimation) {
+      currentAnimation.cancel();
+      currentAnimation = null;
+    }
+
+    // If already animating, clean up immediately
+    if (isAnimating) {
+      const allContent = document.querySelectorAll(".lang-content");
+      allContent.forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.classList.remove("transitioning");
+          el.style.clipPath = "";
+          if (el !== newContent) {
+            el.style.display = "none";
+          }
+        }
+      });
+    }
+
+    isAnimating = true;
+    const speed = 1500;
+    const minDuration = 0.3;
+    const maxDuration = 1.5;
+
+    try {
+      // Position new content absolutely on top to create overlay effect
+      newContent.classList.add("transitioning");
+
+      // Set initial state: content hidden at top (fully clipped)
+      // Set this BEFORE display: block to prevent flicker of unclipped content
+      newContent.style.clipPath = "inset(0 0 100% 0)";
+      newContent.style.display = "block";
+
+      // Calculate duration based on content height for consistent visual speed
+      const height = newContent.offsetHeight;
+      const duration = Math.max(
+        minDuration,
+        Math.min(maxDuration, height / speed),
+      );
+
+      // Animate wipe-up effect from bottom to top
+      currentAnimation = animate(
+        newContent,
+        { clipPath: "inset(0 0 0 0)" } as Record<string, string>,
+        { duration },
+      );
+
+      await currentAnimation.finished;
+
+      // Cleanup after animation completes
+      newContent.classList.remove("transitioning");
+      newContent.style.clipPath = ""; // Remove inline style
+
+      // Hide the old content now that transition is complete
+      if (oldContent) {
+        oldContent.style.display = "none";
+      }
+    } catch (error) {
+      // Animation was cancelled or errored - still clean up
+      newContent.classList.remove("transitioning");
+      newContent.style.clipPath = "";
+    } finally {
+      isAnimating = false;
+      currentAnimation = null;
+    }
+  }
+
+  function updateLanguageDisplay(newLang: string) {
+    // Find the content for the current language
+    const selectedContent = document.querySelector(
+      `.lang-content[data-lang="${newLang}"]`,
+    );
+
+    // Get all content divs
+    const allContent = document.querySelectorAll(".lang-content");
+
+    // Find currently visible content (the old content)
+    let oldContent: HTMLElement | null = null;
+    allContent.forEach((el) => {
+      if (
+        el instanceof HTMLElement &&
+        el.style.display === "block" &&
+        el !== selectedContent
+      ) {
+        oldContent = el;
+      }
+    });
+
+    if (selectedContent instanceof HTMLElement) {
+      // Only animate if there is a change and old content exists
+      if (oldContent && oldContent !== selectedContent) {
+        animateLanguageChange(selectedContent, oldContent);
+      } else if (!oldContent) {
+        // Initial load or no previous content visible
+        selectedContent.style.display = "block";
+      }
+    }
+  }
+
+  function initLanguagePicker() {
+    const select = document.getElementById(
+      "lang-select",
+    ) as HTMLSelectElement | null;
+
+    // Initialize display based on localStorage
+    const currentLang = getLanguageFromLocalStorage();
+
+    // Initial display (no animation on first load)
+    const initialContent = document.querySelector(
+      `.lang-content[data-lang="${currentLang}"]`,
+    );
+    if (initialContent instanceof HTMLElement) {
+      // Hide all others first to be safe
+      document.querySelectorAll(".lang-content").forEach((el) => {
+        if (el instanceof HTMLElement) el.style.display = "none";
+      });
+      initialContent.style.display = "block";
+      initialContent.style.opacity = "1";
+    }
+
+    if (!select) return;
+
+    select.value = currentLang;
+
+    // Remove old listener if exists (prevent duplicates)
+    select.onchange = null;
+
+    // Handle change
+    select.onchange = (e) => {
+      if (!e.target) return;
+      const newLang = (e.target as HTMLSelectElement).value;
+
+      // Save to localStorage
+      localStorage.setItem("lang", newLang);
+
+      // Update display with animation
+      updateLanguageDisplay(newLang);
+
+      // Dispatch event for other components to react (like CodeBlockHandler)
+      window.dispatchEvent(
+        new CustomEvent("language-change", { detail: newLang }),
+      );
+    };
+  }
+
+  // Run on initial load and after View Transitions
+  document.addEventListener("astro:page-load", initLanguagePicker);
+</script>
+
+<style>
+  .language-picker {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5rem 0;
+  }
+
+  select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    background-color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  select:hover {
+    border-color: #9ca3af;
+  }
+</style>

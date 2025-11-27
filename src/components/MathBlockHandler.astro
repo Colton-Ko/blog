@@ -1,0 +1,297 @@
+<script>
+    import { animate } from "motion";
+
+    const ANIMATION_DURATION = 0.3;
+    const SELECTORS = {
+        MATH_BLOCK: ".katex-display",
+        WRAPPER: ".math-block-wrapper",
+        HEADER: ".code-block-header",
+        SOURCE: ".math-latex-source",
+        ANNOTATION: 'annotation[encoding="application/x-tex"]',
+    };
+
+    /**
+     * Initializes click handlers for math blocks.
+     */
+    function initMathBlocks() {
+        const mathBlocks = document.querySelectorAll(SELECTORS.MATH_BLOCK);
+        console.log(`MathBlockHandler: Found ${mathBlocks.length} math blocks`);
+
+        mathBlocks.forEach((mathBlock) => {
+            if (isWrapped(mathBlock)) return;
+
+            const latexSource = extractLatexSource(mathBlock);
+            if (!latexSource) return;
+
+            mathBlock.addEventListener("click", (e) => {
+                e.stopPropagation();
+                toggleMathBlock(mathBlock, latexSource);
+            });
+        });
+    }
+
+    function isWrapped(element: Element): boolean {
+        return (
+            element.parentElement?.classList.contains(
+                SELECTORS.WRAPPER.substring(1),
+            ) ?? false
+        );
+    }
+
+    function extractLatexSource(mathBlock: Element): string | null {
+        const annotation = mathBlock.querySelector(SELECTORS.ANNOTATION);
+        return annotation ? annotation.textContent : null;
+    }
+
+    function toggleMathBlock(mathBlock: Element, latexSource: string) {
+        if (isWrapped(mathBlock)) {
+            collapseMathBlock(mathBlock);
+        } else {
+            expandMathBlock(mathBlock, latexSource);
+        }
+    }
+
+    function collapseMathBlock(mathBlock: Element) {
+        const wrapper = mathBlock.parentElement;
+        if (!wrapper) return;
+
+        const header = wrapper.querySelector(SELECTORS.HEADER);
+        const sourceDiv = wrapper.querySelector(SELECTORS.SOURCE);
+
+        if (!header || !sourceDiv) return;
+
+        const animations = [
+            animate(
+                header,
+                { height: 0, opacity: 0 },
+                { duration: ANIMATION_DURATION },
+            ),
+            animate(
+                sourceDiv,
+                { height: 0, opacity: 0, padding: 0 },
+                { duration: ANIMATION_DURATION },
+            ),
+            animate(
+                wrapper,
+                {
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "rgba(0,0,0,0)",
+                    borderWidth: 0,
+                },
+                { duration: ANIMATION_DURATION },
+            ),
+        ];
+
+        Promise.all(animations.map((a) => a.finished)).then(() => {
+            if (wrapper.parentNode) {
+                wrapper.parentNode.insertBefore(mathBlock, wrapper);
+                wrapper.remove();
+            }
+        });
+    }
+
+    function expandMathBlock(mathBlock: Element, latexSource: string) {
+        const wrapper = createWrapper();
+        const header = createHeader(latexSource);
+        const sourceDiv = createSourceDiv(latexSource);
+
+        if (mathBlock.parentNode) {
+            mathBlock.parentNode.insertBefore(wrapper, mathBlock);
+            wrapper.appendChild(header);
+            wrapper.appendChild(sourceDiv);
+            wrapper.appendChild(mathBlock);
+        }
+
+        // Stop propagation on wrapper clicks to prevent closing when clicking inside
+        wrapper.addEventListener("click", (e) => e.stopPropagation());
+
+        // Animate in
+        animate(
+            header,
+            { height: "auto", opacity: 1 },
+            { duration: ANIMATION_DURATION },
+        );
+        animate(
+            sourceDiv,
+            { height: "auto", opacity: 1, padding: "1rem" },
+            { duration: ANIMATION_DURATION },
+        );
+        animate(
+            wrapper,
+            {
+                backgroundColor: "#f9fafb",
+                borderColor: "#e5e7eb",
+                borderWidth: "1px",
+            },
+            { duration: ANIMATION_DURATION },
+        );
+    }
+
+    function createWrapper(): HTMLElement {
+        const wrapper = document.createElement("div");
+        wrapper.className = SELECTORS.WRAPPER.substring(1);
+        Object.assign(wrapper.style, {
+            borderWidth: "0px",
+            backgroundColor: "transparent",
+            overflow: "hidden",
+        });
+        return wrapper;
+    }
+
+    function createHeader(latexSource: string): HTMLElement {
+        const header = document.createElement("div");
+        header.className = SELECTORS.HEADER.substring(1);
+        Object.assign(header.style, {
+            height: "0px",
+            opacity: "0",
+            overflow: "hidden",
+        });
+
+        const langLabel = document.createElement("span");
+        langLabel.className = "code-block-language";
+        langLabel.textContent = "latex";
+
+        const copyBtn = createCopyButton(latexSource);
+
+        header.appendChild(langLabel);
+        header.appendChild(copyBtn);
+        return header;
+    }
+
+    function createSourceDiv(source: string): HTMLElement {
+        const sourceDiv = document.createElement("div");
+        sourceDiv.className = SELECTORS.SOURCE.substring(1);
+        Object.assign(sourceDiv.style, {
+            height: "0px",
+            opacity: "0",
+            overflow: "hidden",
+            padding: "0px",
+        });
+
+        const code = document.createElement("code");
+        code.textContent = source;
+        sourceDiv.appendChild(code);
+        return sourceDiv;
+    }
+
+    function createCopyButton(text: string): HTMLElement {
+        const btn = document.createElement("button");
+        btn.className = "code-block-copy-btn";
+        btn.setAttribute("aria-label", "Copy LaTeX to clipboard");
+        btn.innerHTML = getCopyIcon();
+
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            try {
+                await navigator.clipboard.writeText(text);
+                showCopySuccess(btn);
+            } catch (err) {
+                console.error("Failed to copy LaTeX:", err);
+            }
+        });
+
+        return btn;
+    }
+
+    function showCopySuccess(btn: HTMLElement) {
+        btn.classList.add("copied");
+        btn.innerHTML = getCheckIcon();
+
+        setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.classList.add("reverting");
+            btn.innerHTML = getCopyIcon();
+
+            setTimeout(() => btn.classList.remove("reverting"), 300);
+        }, 2000);
+    }
+
+    function getCopyIcon(): string {
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+        `;
+    }
+
+    function getCheckIcon(): string {
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        `;
+    }
+
+    // Initialize on page load and after View Transitions
+    document.addEventListener("astro:page-load", initMathBlocks);
+</script>
+
+<style>
+    /* Math blocks */
+    :global(.katex-display) {
+        overflow-x: auto;
+        padding: 1rem 0;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+        border-radius: 0.5rem;
+    }
+
+    :global(.katex-display::-webkit-scrollbar) {
+        display: none; /* Chrome, Safari and Opera */
+    }
+
+    :global(.katex-display):hover {
+        scrollbar-width: none; /* Firefox */
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    :global(.katex-display):hover::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Math block wrapper when expanded */
+    :global(.math-block-wrapper) {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 1px solid transparent;
+        border-width: 0;
+        background-color: transparent;
+        margin: 1rem 0;
+    }
+
+    :global(.math-block-wrapper .code-block-header) {
+        border-bottom: 1px solid #d1d5db;
+        overflow: hidden;
+        padding: 0;
+    }
+
+    :global(.math-latex-source) {
+        background-color: #f9fafb;
+        padding: 0;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.875rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    :global(.math-latex-source code) {
+        background: none;
+        padding: 0;
+    }
+
+    :global(.math-block-wrapper .katex-display) {
+        background-color: transparent;
+        margin: 0;
+        padding: 1rem;
+        cursor: pointer;
+        transition:
+            background-color 0.3s ease-in-out,
+            padding 0.3s ease-in-out;
+    }
+
+    :global(.math-block-wrapper .katex-display):hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+</style>

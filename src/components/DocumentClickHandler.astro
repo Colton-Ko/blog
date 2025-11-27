@@ -1,0 +1,103 @@
+<script>
+    import { animate } from "motion";
+
+    /**
+     * Handles clicks outside of expanded math/mermaid blocks to collapse them.
+     * Only adds the event listener once to prevent duplicates across View Transitions.
+     */
+    function handleDocumentClick() {
+        // Collapse expanded math blocks
+        const expandedMathWrappers = document.querySelectorAll(
+            ".math-block-wrapper",
+        );
+        expandedMathWrappers.forEach((wrapper) => {
+            const mathBlock = wrapper.querySelector(".katex-display");
+            const sourceDiv = wrapper.querySelector(".math-latex-source");
+            const header = wrapper.querySelector(".code-block-header");
+
+            if (mathBlock && sourceDiv && header) {
+                // Animate out
+                const animations = [
+                    animate(
+                        header,
+                        { height: 0, opacity: 0 },
+                        { duration: 0.3 },
+                    ),
+                    animate(
+                        sourceDiv,
+                        { height: 0, opacity: 0, padding: 0 },
+                        { duration: 0.3 },
+                    ),
+                    animate(
+                        wrapper,
+                        {
+                            backgroundColor: "rgba(0,0,0,0)",
+                            borderColor: "rgba(0,0,0,0)",
+                            borderWidth: 0,
+                        },
+                        { duration: 0.3 },
+                    ),
+                ];
+
+                Promise.all(animations.map((a) => a.finished)).then(() => {
+                    if (wrapper.parentNode) {
+                        wrapper.parentNode.insertBefore(mathBlock, wrapper);
+                        wrapper.remove();
+                    }
+                });
+            }
+        });
+
+        // Collapse expanded mermaid blocks
+        const expandedMermaidWrappers = document.querySelectorAll(
+            ".mermaid-block-wrapper",
+        );
+        expandedMermaidWrappers.forEach((wrapper) => {
+            const mermaidBlock = wrapper.querySelector(".mermaid");
+            const sourceDiv = wrapper.querySelector(".mermaid-source");
+            const header = wrapper.querySelector(".code-block-header");
+
+            if (mermaidBlock && sourceDiv && header) {
+                // Animate out
+                const animations = [
+                    animate(
+                        header,
+                        { height: 0, opacity: 0 },
+                        { duration: 0.3 },
+                    ),
+                    animate(
+                        sourceDiv,
+                        { height: 0, opacity: 0, padding: 0 },
+                        { duration: 0.3 },
+                    ),
+                    animate(
+                        wrapper,
+                        {
+                            backgroundColor: "rgba(0,0,0,0)",
+                            borderColor: "rgba(0,0,0,0)",
+                            borderWidth: 0,
+                        },
+                        { duration: 0.3 },
+                    ),
+                ];
+
+                Promise.all(animations.map((a) => a.finished)).then(() => {
+                    if (wrapper.parentNode) {
+                        wrapper.parentNode.insertBefore(mermaidBlock, wrapper);
+                        wrapper.remove();
+                    }
+                });
+            }
+        });
+    }
+
+    // Add document click listener (only once)
+    const win = window as unknown as {
+        blockClickListenerAdded?: boolean;
+    } & Window;
+
+    if (!win.blockClickListenerAdded) {
+        document.addEventListener("click", handleDocumentClick);
+        win.blockClickListenerAdded = true;
+    }
+</script>

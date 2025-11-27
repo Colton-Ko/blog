@@ -1,0 +1,88 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getDefaultLanguage } from "../../../config.language";
+import type { Post } from "../../types";
+
+export async function getStaticPaths() {
+  // Dynamically import all markdown files in content/posts/
+  const allPostFiles = import.meta.glob("../../content/posts/**/*.md");
+
+  // Organize posts by slug
+  const postsBySlug: Record<string, Record<string, Post>> = {};
+
+  for (const [path, importFn] of Object.entries(allPostFiles)) {
+    const post = (await importFn()) as Post;
+    const match = path.match(/\/posts\/([^\/]+)\/[^\/]+_([a-z]{2})\.md$/);
+    if (match) {
+      const slug = match[1];
+      const lang = match[2];
+
+      if (!postsBySlug[slug]) {
+        postsBySlug[slug] = {};
+      }
+      postsBySlug[slug][lang] = post;
+    }
+  }
+
+  // Return static paths for each slug
+  return Object.entries(postsBySlug).map(([slug, langFiles]) => ({
+    params: { slug },
+    props: { langFiles },
+  }));
+}
+
+// const { slug } = Astro.params;
+const { langFiles } = Astro.props as { langFiles: Record<string, Post> };
+
+const defaultLang = getDefaultLanguage();
+
+// Get the title from the default language version
+const defaultTitle = langFiles[defaultLang]?.frontmatter?.title || "Blog Post";
+---
+
+<Layout title={defaultTitle}>
+  <div class="content-wrapper">
+    {
+      Object.entries(langFiles).map(([lang, module]) => {
+        const Content = module.Content;
+        return (
+          <div class="lang-content" data-lang={lang} style="display: none;">
+            <Content />
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <style>
+    /* Wrapper for positioning context */
+    .content-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flow-root; /* Create BFC to prevent margin collapse */
+    }
+
+    /* Base positioning */
+    .lang-content {
+      position: relative;
+      width: 100%;
+    }
+
+    /* When transitioning, overlay absolutely without affecting layout */
+    .lang-content.transitioning {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 10;
+      background-color: white; /* Cover old content */
+    }
+
+    /* Ensure content-wrapper doesn't collapse when content is absolute */
+    .content-wrapper:has(.lang-content.transitioning) {
+      min-height: 100vh; /* Minimum height to prevent collapse */
+    }
+  </style>
+</Layout>

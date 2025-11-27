@@ -1,0 +1,355 @@
+---
+// Code Block Header Bar component
+// Adds a header bar with language label and copy functionality to code blocks
+---
+
+<script>
+    import { animate } from "motion";
+    import {
+        codeBlockHandlerTranslations,
+        getCodeBlockHandlerTranslation,
+    } from "./CodeBlockHandlerTranslations";
+
+    // Initialize code copy buttons globally
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).initCodeCopyButtons = function (container = document) {
+        // Find all pre elements that are not inside mermaid diagrams AND not inside source-view
+        // If container is provided, search within it
+        const preElements = container.querySelectorAll(
+            "pre:not(.mermaid pre):not(.source-view pre)",
+        );
+
+        preElements.forEach((pre) => {
+            // Skip if already wrapped or is a mermaid element
+            if (
+                pre.classList.contains("mermaid") ||
+                pre.parentElement?.classList.contains("code-block-wrapper")
+            ) {
+                return;
+            }
+
+            // Extract language from code element class (e.g., "language-javascript")
+            const code = pre.querySelector("code");
+            let language = "text";
+            if (code && code.className) {
+                const match = code.className.match(/language-(\w+)/);
+                if (match) {
+                    language = match[1];
+                }
+            }
+
+            // Get current language translations
+            const currentLang = localStorage.getItem("lang") || "us";
+            const t =
+                getCodeBlockHandlerTranslation(currentLang) ||
+                codeBlockHandlerTranslations.us;
+
+            // Create wrapper
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-block-wrapper";
+
+            // Create header
+            const header = document.createElement("div");
+            header.className = "code-block-header";
+
+            // Create language label
+            const langLabel = document.createElement("span");
+            langLabel.className = "code-block-language";
+            langLabel.textContent = language;
+
+            // Create copy button with SVG icon
+            const button = document.createElement("button");
+            button.className = "code-block-copy-btn";
+            button.setAttribute("aria-label", t.ariaLabel);
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            `;
+
+            // Add click handler
+            button.addEventListener("click", async () => {
+                const text = code ? code.textContent : pre.textContent;
+                if (!text) return;
+
+                try {
+                    // Use the Clipboard API
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(text);
+                    } else {
+                        // Fallback for older browsers
+                        const textArea = document.createElement("textarea");
+                        textArea.value = text;
+                        textArea.style.position = "fixed";
+                        textArea.style.left = "-999999px";
+                        textArea.style.top = "-999999px";
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+
+                        try {
+                            document.execCommand("copy");
+                            textArea.remove();
+                        } catch (err) {
+                            console.error("Fallback: Failed to copy", err);
+                            textArea.remove();
+                            throw err;
+                        }
+                    }
+
+                    // Show success feedback
+                    button.classList.add("copied");
+                    button.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    `;
+
+                    // Animate icon in
+                    const icon = button.querySelector("svg");
+                    if (icon) {
+                        animate(
+                            icon,
+                            { opacity: [0, 1], scale: [0.8, 1] },
+                            { duration: 0.3 },
+                        );
+                    }
+
+                    setTimeout(() => {
+                        button.classList.remove("copied");
+                        button.classList.add("reverting");
+                        button.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        `;
+
+                        // Animate icon in
+                        const revertIcon = button.querySelector("svg");
+                        if (revertIcon) {
+                            animate(
+                                revertIcon,
+                                { opacity: [0, 1], scale: [0.8, 1] },
+                                { duration: 0.3 },
+                            );
+                        }
+
+                        // Remove reverting class after animation completes
+                        setTimeout(() => {
+                            button.classList.remove("reverting");
+                        }, 300);
+                    }, 2000);
+                } catch (err) {
+                    console.error("Failed to copy code:", err);
+                    button.classList.add("error");
+                    button.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    `;
+
+                    // Animate icon in
+                    const icon = button.querySelector("svg");
+                    if (icon) {
+                        animate(
+                            icon,
+                            { opacity: [0, 1], scale: [0.8, 1] },
+                            { duration: 0.3 },
+                        );
+                    }
+
+                    setTimeout(() => {
+                        button.classList.remove("error");
+                        button.classList.add("reverting");
+                        button.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        `;
+
+                        // Animate icon in
+                        const revertIcon = button.querySelector("svg");
+                        if (revertIcon) {
+                            animate(
+                                revertIcon,
+                                { opacity: [0, 1], scale: [0.8, 1] },
+                                { duration: 0.3 },
+                            );
+                        }
+
+                        // Remove reverting class after animation completes
+                        setTimeout(() => {
+                            button.classList.remove("reverting");
+                        }, 300);
+                    }, 2000);
+                }
+            });
+
+            // Assemble header
+            header.appendChild(langLabel);
+            header.appendChild(button);
+
+            // Wrap the pre element
+            if (pre.parentNode) {
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(header);
+                wrapper.appendChild(pre);
+            }
+        });
+    };
+
+    // Initialize on page load
+    document.addEventListener("astro:page-load", () =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).initCodeCopyButtons(),
+    );
+
+    // Reinitialize when language changes
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!(window as any).codeBlockCopyButtonLanguageListenerAdded) {
+        window.addEventListener("language-change", () => {
+            // Remove old wrappers
+            document
+                .querySelectorAll(".code-block-wrapper")
+                .forEach((wrapper) => {
+                    const pre = wrapper.querySelector("pre");
+                    if (pre && wrapper.parentNode) {
+                        wrapper.parentNode.insertBefore(pre, wrapper);
+                        wrapper.remove();
+                    }
+                });
+            // Reinitialize with new language
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (window as any).initCodeCopyButtons();
+        });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).codeBlockCopyButtonLanguageListenerAdded = true;
+    }
+</script>
+
+<style>
+    /* Code block wrapper */
+    :global(.code-block-wrapper) {
+        margin: 1rem 0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+    }
+
+    /* Code block header */
+    :global(.code-block-header) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 0.2rem 0.75rem;
+        background-color: #e7e9ed;
+    }
+
+    /* Language label */
+    :global(.code-block-language) {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Copy button */
+    :global(.code-block-copy-btn) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    :global(.code-block-copy-btn svg) {
+        /* transition: all 0.3s ease-in-out; */ /* Handled by motion */
+    }
+
+    :global(.code-block-copy-btn:hover) {
+        background-color: #d1d5db;
+        color: #374151;
+    }
+
+    :global(.code-block-copy-btn:active) {
+        transform: scale(0.95);
+    }
+
+    :global(.code-block-copy-btn.copied) {
+        color: #10b981;
+    }
+
+    :global(.code-block-copy-btn.error) {
+        color: #ef4444;
+    }
+
+    /* Pre element inside wrapper */
+    :global(.code-block-wrapper pre) {
+        margin: 0;
+        border-radius: 0;
+        border: none;
+    }
+
+    /* Ensure consistent code block appearance */
+    :global(.code-block-wrapper pre code) {
+        display: block;
+        padding: 1rem;
+        overflow-x: auto;
+    }
+
+    /* Code blocks */
+    :global(pre) {
+        background-color: #f5f5f5 !important;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        border: none !important;
+        box-shadow: none !important;
+        position: relative;
+    }
+
+    :global(pre code) {
+        background-color: transparent !important;
+        padding: 0 !important;
+    }
+
+    :global(code) {
+        font-family: ui-monospace, monospace;
+        font-size: 0.875em;
+        background-color: #f5f5f5;
+        padding: 0.125rem 0.25rem;
+        border-radius: 0.25rem;
+    }
+
+    /* Remove background from code inside pre */
+    :global(pre code) {
+        background-color: transparent;
+        padding: 0;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    :global(pre::-webkit-scrollbar) {
+        display: none;
+    }
+
+    :global(code:hover) {
+        scrollbar-width: auto;
+    }
+
+    :global(code:hover::-webkit-scrollbar) {
+        display: block;
+    }
+</style>

@@ -1,0 +1,61 @@
+---
+// Search button component
+---
+
+<button id="search-button" class="search-button" aria-label="Search">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="11" cy="11" r="8"></circle>
+    <path d="m21 21-4.35-4.35"></path>
+  </svg>
+</button>
+
+<script>
+  function initSearchButton() {
+    const searchButton = document.getElementById("search-button");
+    if (!searchButton) return;
+
+    searchButton.onclick = () => {
+      window.dispatchEvent(new CustomEvent("open-search"));
+    };
+  }
+
+  document.addEventListener("astro:page-load", initSearchButton);
+</script>
+
+<style>
+  .search-button {
+    display: none; /* Hidden on mobile by default */
+    background: none;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.375rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s ease;
+  }
+
+  .search-button:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+    border-color: #9ca3af;
+  }
+
+  /* Show on tablet and desktop */
+  @media (min-width: 768px) {
+    .search-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>

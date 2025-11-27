@@ -1,0 +1,117 @@
+---
+// BlogPostList component - displays a list of all blog posts
+// Automatically discovers posts from content/posts/
+// BlogPostList component - displays a list of all blog posts
+// Automatically discovers posts from content/posts/
+import { DEFAULT_LANGUAGE } from "../../config.language";
+import type { Post } from "../types";
+
+interface Props {
+    lang?: string;
+}
+
+const { lang = DEFAULT_LANGUAGE } = Astro.props;
+
+interface PostData {
+    title: string;
+    description: string;
+}
+
+interface PostsBySlug {
+    [slug: string]: {
+        [lang: string]: PostData;
+    };
+}
+
+// Dynamically import all markdown files in content/posts/
+const postFiles = import.meta.glob("../content/posts/**/*.md");
+
+// Gather all posts and organize by slug and language
+const postsBySlug: PostsBySlug = {};
+
+for (const [path, importFn] of Object.entries(postFiles)) {
+    const post = (await importFn()) as Post;
+    const match = path.match(/\/posts\/([^\/]+)\/[^\/]+_([a-z]{2})\.md$/);
+    if (match) {
+        const slug = match[1];
+        const postLang = match[2];
+
+        if (!postsBySlug[slug]) {
+            postsBySlug[slug] = {};
+        }
+        postsBySlug[slug][postLang] = {
+            title: post.frontmatter.title || slug,
+            description: post.frontmatter.description || "",
+        };
+    }
+}
+
+// Filter posts based on current language or fallback
+const filteredPosts = Object.entries(postsBySlug)
+    .map(([slug, langs]) => {
+        let postData = langs[lang];
+        // Fallback to default language if translation missing
+        if (!postData && langs[DEFAULT_LANGUAGE]) {
+            postData = langs[DEFAULT_LANGUAGE];
+        }
+        return { slug, postData };
+    })
+    .filter((item) => item.postData);
+---
+
+<ul class="post-list">
+    {
+        filteredPosts.map(({ slug, postData }) => (
+            <li class="post-item">
+                <a href={`/posts/${slug}`} class="post-link">
+                    <h3 class="post-title">{postData.title}</h3>
+                    {postData.description && (
+                        <p class="post-description">{postData.description}</p>
+                    )}
+                </a>
+            </li>
+        ))
+    }
+</ul>
+
+<style>
+    .post-list {
+        list-style: none;
+        padding: 0;
+        margin: 2rem 0;
+    }
+
+    .post-item {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .post-item:hover {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .post-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .post-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+        color: #1a1a1a;
+    }
+
+    .post-description {
+        margin: 0;
+        color: #666;
+        line-height: 1.6;
+    }
+</style>

@@ -1,0 +1,73 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getDefaultLanguage } from "../../config.language";
+import type { Post } from "../types";
+const defaultLang = getDefaultLanguage();
+
+// Dynamically import all markdown and MDX files in content/index/
+const indexFiles = {
+  ...import.meta.glob("../content/index/*.md"),
+  ...import.meta.glob("../content/index/*.mdx"),
+};
+
+// Gather all language versions
+const langFiles: Record<string, Post> = {};
+
+for (const [path, importFn] of Object.entries(indexFiles)) {
+  const match = path.match(/index_([a-z]{2})\.(md|mdx)$/);
+  if (match) {
+    const lang = match[1];
+    langFiles[lang] = (await importFn()) as Post;
+  }
+}
+
+// Get the title from the default (us) version
+const defaultTitle = langFiles[defaultLang]?.frontmatter?.title || "Blog Demo";
+---
+
+<Layout title={defaultTitle}>
+  <div class="content-wrapper">
+    {
+      Object.entries(langFiles).map(([lang, module]) => {
+        const Content = module.Content;
+        return (
+          <div class="lang-content" data-lang={lang} style="display: none;">
+            <Content />
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <style>
+    /* Wrapper for positioning context */
+    .content-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flow-root; /* Create BFC to prevent margin collapse */
+    }
+
+    /* Base positioning */
+    .lang-content {
+      position: relative;
+      width: 100%;
+    }
+
+    /* When transitioning, overlay absolutely without affecting layout */
+    .lang-content.transitioning {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 10;
+      background-color: white; /* Cover old content */
+    }
+
+    /* Ensure content-wrapper doesn't collapse when content is absolute */
+    .content-wrapper:has(.lang-content.transitioning) {
+      min-height: 100vh; /* Minimum height to prevent collapse */
+    }
+  </style>
+</Layout>
