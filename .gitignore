@@ -89,3 +89,6 @@ $RECYCLE.BIN/
 
 # Private deployment script
 deploy.sh
+
+# AI stuff
+.agent
