@@ -6,6 +6,8 @@ import rehypeKatex from 'rehype-katex';
 import rehypeMermaid from 'rehype-mermaid';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
+import remarkDirective from 'remark-directive';
+import remarkDesmos from './src/plugins/remark-desmos.mjs';
 import remarkHighlight from './src/plugins/remark-highlight.mjs';
 import remarkSubSup from './src/plugins/remark-subsup.mjs';
 import rehypePreserveMermaid from './src/plugins/rehype-preserve-mermaid.mjs';
@@ -17,6 +19,8 @@ export default defineConfig({
     markdown: {
         syntaxHighlight: false, // Disable Astro's default Shiki to let rehype plugins handle code blocks
         remarkPlugins: [
+            remarkDirective,
+            remarkDesmos,
             remarkMath,
             remarkHighlight,
             remarkSubSup,
