@@ -4,7 +4,36 @@
  */
 
 import { animate } from 'https://cdn.skypack.dev/motion@12.23.24';
-import { getDesmosTranslation } from '../components/DesmosTranslations.ts';
+import { getDefaultLanguage } from '../../config.language';
+
+// Translations
+const translations = {
+    us: {
+        clickToLoad: "Click to see graph",
+        poweredBy: "(Graph powered by Desmos)",
+        loading: "Loading Calculator..."
+    },
+    tw: {
+        clickToLoad: "若要查看圖表，請點擊",
+        poweredBy: "(圖表由 Desmos 提供)",
+        loading: "正在載入圖形計算機..."
+    },
+    id: {
+        clickToLoad: "Klik untuk melihat grafik",
+        poweredBy: "(Grafik didukung oleh Desmos)",
+        loading: "Memuat Kalkulator..."
+    },
+    su: {
+        clickToLoad: "Нажмите, чтобы увидеть график",
+        poweredBy: "(График на базе Desmos)",
+        loading: "Загрузка калькулятора..."
+    },
+    hk: {
+        clickToLoad: "撳掣睇圖",
+        poweredBy: "(圖表由 Desmos 提供)",
+        loading: "Load 緊圖形計數機..."
+    }
+};
 
 /**
  * Initialize a Desmos calculator widget
@@ -22,13 +51,14 @@ export function initDesmosWidget(containerId, config) {
     const loading = document.getElementById(`${containerId}-loading`);
     const loadingText = document.getElementById(`${containerId}-loading-text`);
     const calculatorDiv = document.getElementById(containerId);
+    const DEFAULT_LANG = getDefaultLanguage();
 
     if (!container || !placeholder || !calculatorDiv) return;
 
     // Function to update translations based on current language
     function updateTranslations() {
         const currentLang = localStorage.getItem('lang') || 'us';
-        const t = getDesmosTranslation(currentLang);
+        const t = translations[currentLang] || DEFAULT_LANG;
 
         placeholderTitle.textContent = t.clickToLoad;
         placeholderSubtitle.textContent = t.poweredBy;

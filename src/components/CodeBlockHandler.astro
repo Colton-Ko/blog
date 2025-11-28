@@ -38,6 +38,9 @@
                 }
             }
 
+            // Skip mermaid blocks (handled by MermaidScript/MermaidBlockHandler)
+            if (language === "mermaid") return;
+
             // Get current language translations
             const currentLang = localStorage.getItem("lang") || "us";
             const t =
