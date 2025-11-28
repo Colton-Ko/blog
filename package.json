@@ -14,7 +14,8 @@
     "@astrojs/ts-plugin": "^1.10.6",
     "astro": "^5.16.0",
     "fuse.js": "^7.1.0",
-    "motion": "^12.23.24"
+    "motion": "^12.23.24",
+    "playwright": "^1.57.0"
   },
   "devDependencies": {
     "@eslint/css": "^0.14.1",
@@ -30,7 +31,6 @@
     "eslint-plugin-astro": "^1.5.0",
     "eslint-plugin-mdx": "^3.6.2",
     "globals": "^16.5.0",
-    "playwright": "^1.57.0",
     "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",
     "rehype-mermaid": "^3.0.0",
@@ -38,8 +38,6 @@
     "remark-directive": "^4.0.0",
     "remark-mark": "^0.0.0",
     "remark-math": "^6.0.0",
-    "remark-mermaid": "^0.2.0",
-    "remark-mermaidjs": "^7.0.0",
     "remark-sub-super": "^1.0.21",
     "typescript-eslint": "^8.48.0",
     "unist-util-visit": "^5.0.0"
