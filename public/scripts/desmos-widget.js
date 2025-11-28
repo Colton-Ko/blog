@@ -3,9 +3,6 @@
  * Used by both remark-desmos plugin and DesmosBlock component
  */
 
-import { animate } from 'https://cdn.skypack.dev/motion@12.23.24';
-import { getDefaultLanguage } from '../../config.language';
-
 // Translations
 const translations = {
     us: {
@@ -43,7 +40,7 @@ const translations = {
  * @param {string} config.lang - Language code for Desmos UI
  * @param {string} [config.state] - JSON string of calculator state
  */
-export function initDesmosWidget(containerId, config) {
+export function initDesmosWidget(containerId, config = {}) {
     const container = document.getElementById(`${containerId}-container`);
     const placeholder = document.getElementById(`${containerId}-placeholder`);
     const placeholderTitle = document.getElementById(`${containerId}-placeholder-title`);
@@ -51,14 +48,19 @@ export function initDesmosWidget(containerId, config) {
     const loading = document.getElementById(`${containerId}-loading`);
     const loadingText = document.getElementById(`${containerId}-loading-text`);
     const calculatorDiv = document.getElementById(containerId);
-    const DEFAULT_LANG = getDefaultLanguage();
 
     if (!container || !placeholder || !calculatorDiv) return;
+
+    // Read config from data attributes if not provided
+    const apiKey = config.key || container.dataset.key;
+    const lang = config.lang || container.dataset.defaultLang || 'us'; // Use defaultLang as fallback for API lang too
+    const state = config.state || container.dataset.state;
 
     // Function to update translations based on current language
     function updateTranslations() {
         const currentLang = localStorage.getItem('lang') || 'us';
-        const t = translations[currentLang] || DEFAULT_LANG;
+        const defaultLang = container.dataset.defaultLang || 'us';
+        const t = translations[currentLang] || translations[defaultLang] || translations.us;
 
         placeholderTitle.textContent = t.clickToLoad;
         placeholderSubtitle.textContent = t.poweredBy;
@@ -103,20 +105,24 @@ export function initDesmosWidget(containerId, config) {
         container.style.cursor = 'default';
         container.style.filter = 'none';
 
-        // Animate placeholder fade out
-        animate(placeholder, { opacity: 0 }, { duration: 0.3, easing: 'ease-in-out' }).finished.then(() => {
+        // Fade out placeholder
+        placeholder.style.transition = 'opacity 0.3s ease-in-out';
+        placeholder.style.opacity = '0';
+
+        setTimeout(() => {
             placeholder.style.display = 'none';
             loading.style.display = 'flex';
-            // Animate loading fade in
-            animate(loading, { opacity: 1 }, { duration: 0.3, easing: 'ease-in-out' });
-        });
+            // Fade in loading
+            loading.style.transition = 'opacity 0.3s ease-in-out';
+            loading.style.opacity = '1';
+        }, 300);
 
         function init() {
             if (typeof Desmos === 'undefined') {
                 if (!document.getElementById('desmos-api-script')) {
                     const script = document.createElement('script');
                     script.id = 'desmos-api-script';
-                    script.src = `https://www.desmos.com/api/v1.11/calculator.js?apiKey=${config.key}&lang=${config.lang}`;
+                    script.src = `https://www.desmos.com/api/v1.11/calculator.js?apiKey=${apiKey}&lang=${lang}`;
                     script.async = true;
                     script.onload = function () {
                         document.dispatchEvent(new Event('desmos-ready'));
@@ -137,18 +143,23 @@ export function initDesmosWidget(containerId, config) {
 
             const calculator = Desmos.GraphingCalculator(calculatorDiv);
             try {
-                const state = config.state ? JSON.parse(config.state) : null;
-                if (state) calculator.setState(state);
+                const calculatorState = state ? JSON.parse(state) : null;
+                if (calculatorState) calculator.setState(calculatorState);
             } catch (e) {
                 console.error('Failed to parse Desmos state', e);
             }
 
-            // Animate loading fade out and calculator fade in
-            animate(loading, { opacity: 0 }, { duration: 0.3, easing: 'ease-in-out' }).finished.then(() => {
+            // Fade out loading
+            loading.style.transition = 'opacity 0.3s ease-in-out';
+            loading.style.opacity = '0';
+
+            setTimeout(() => {
                 loading.style.display = 'none';
                 calculatorDiv.style.display = 'block';
-                animate(calculatorDiv, { opacity: 1 }, { duration: 0.4, easing: 'ease-in-out' });
-            });
+                // Fade in calculator
+                calculatorDiv.style.transition = 'opacity 0.4s ease-in-out';
+                calculatorDiv.style.opacity = '1';
+            }, 300);
         }
 
         setTimeout(init, 50);
@@ -159,4 +170,9 @@ export function initDesmosWidget(containerId, config) {
             loadAndRun();
         }
     });
+}
+
+// Expose to window for Remark plugin usage
+if (typeof window !== 'undefined') {
+    window.initDesmosWidget = initDesmosWidget;
 }

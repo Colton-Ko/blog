@@ -7,16 +7,22 @@ export interface DesmosTemplateConfig {
     uniqueId: string;
     width: string;
     height: string;
+    defaultLang?: string;
+    key?: string;
+    state?: string;
 }
 
 /**
  * Generate HTML structure for Desmos calculator widget
  */
 export function generateDesmosHTML(config: DesmosTemplateConfig): string {
-    const { uniqueId, width, height } = config;
+    const { uniqueId, width, height, defaultLang = 'us', key, state } = config;
+
+    const stateAttr = state ? ` data-state='${state}'` : '';
+    const keyAttr = key ? ` data-key="${key}"` : '';
 
     return `
-<div id="${uniqueId}-container" class="desmos-container" style="width: ${width}; height: ${height}; position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; cursor: pointer; transition: all 0.2s ease;">
+<div id="${uniqueId}-container" class="desmos-container" data-default-lang="${defaultLang}"${keyAttr}${stateAttr} style="width: ${width}; height: ${height}; position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; cursor: pointer; transition: all 0.2s ease;">
     <!-- Graph Paper Background -->
     <div style="position: absolute; inset: 0; background-color: #f8f9fa; background-image: linear-gradient(#e9ecef 1px, transparent 1px), linear-gradient(90deg, #e9ecef 1px, transparent 1px); background-size: 20px 20px; z-index: 0;"></div>
     

@@ -1,6 +1,7 @@
 import { visit } from 'unist-util-visit';
 import dotenv from 'dotenv';
 import { generateDesmosHTML } from '../components/desmos-template.ts';
+import { DEFAULT_LANGUAGE } from '../../config.language.ts';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -155,21 +156,25 @@ export default function remarkDesmos() {
             const uniqueId = `calculator-${Math.random().toString(36).substring(2, 9)}`;
 
             // Generate HTML using shared template
-            const htmlContent = generateDesmosHTML({ uniqueId, width, height });
+            const htmlContent = generateDesmosHTML({
+                uniqueId,
+                width,
+                height,
+                defaultLang: DEFAULT_LANGUAGE
+            });
 
             // Add initialization script that uses the shared widget module
             const html = `
 ${htmlContent}
 <script type="module">
-import { initDesmosWidget } from '/src/scripts/desmos-widget.js';
+import { initDesmosWidget } from '/scripts/desmos-widget.js';
 
 initDesmosWidget('${uniqueId}', {
     key: '${key}',
     lang: '${lang}',
     state: ${state ? JSON.stringify(state) : 'null'}
 });
-</script>
-        `;
+</script>`;
 
             data.hName = 'div';
             data.hProperties = {

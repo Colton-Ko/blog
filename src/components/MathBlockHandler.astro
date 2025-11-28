@@ -39,6 +39,18 @@
     }
 
     function extractLatexSource(mathBlock: Element): string | null {
+        // First try parent wrapper's data-source attribute (added by rehype-katex-source)
+        const wrapper = mathBlock.parentElement;
+        if (wrapper?.classList.contains("math-block-container")) {
+            const dataSource = wrapper.getAttribute("data-source");
+            if (dataSource) return dataSource;
+        }
+
+        // Fallback: try data-latex attribute on the element itself
+        const dataLatex = mathBlock.getAttribute("data-source");
+        if (dataLatex) return dataLatex;
+
+        // Last resort: try to find annotation element (if MathML is present)
         const annotation = mathBlock.querySelector(SELECTORS.ANNOTATION);
         return annotation ? annotation.textContent : null;
     }

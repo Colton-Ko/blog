@@ -55,17 +55,32 @@ if (link && !state) {
 }
 
 // Generate HTML using shared template
-const html = generateDesmosHTML({ uniqueId, width, height });
+const html = generateDesmosHTML({
+    uniqueId,
+    width,
+    height,
+    defaultLang: DEFAULT_LANGUAGE,
+    key,
+    state: calculatorState,
+});
 ---
 
 <Fragment set:html={html} />
 
-<script type="module" define:vars={{ uniqueId, key, lang, calculatorState }}>
-    import { initDesmosWidget } from "../scripts/desmos-widget.js";
+<script is:inline type="module">
+    import { initDesmosWidget } from "/scripts/desmos-widget.js";
 
-    initDesmosWidget(uniqueId, {
-        key: key,
-        lang: lang,
-        state: calculatorState,
-    });
+    // Get the uniqueId from the previous sibling or context?
+    // Actually, we can't easily pass uniqueId without define:vars unless we generate the script content string.
+    // But wait, we can just find the container we just rendered!
+    // Or, we can keep define:vars just for uniqueId, which is much safer than passing large JSON state.
+
+    // BETTER: Use a data attribute on the script tag itself? No.
+    // Let's stick to define:vars ONLY for uniqueId, but read the rest from DOM.
+    // This minimizes the data passed through JS.
+</script>
+
+<script is:inline type="module" define:vars={{ uniqueId }}>
+    import { initDesmosWidget } from "/scripts/desmos-widget.js";
+    initDesmosWidget(uniqueId);
 </script>
