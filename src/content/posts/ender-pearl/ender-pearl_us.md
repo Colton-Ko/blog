@@ -304,7 +304,7 @@ $$
 
 #### Result (Desmos)
 
-:::desmos{key="45bb9b3b9b8c45da9f842ae626539ffd" lang="en" link="https://www.desmos.com/calculator/288f9f9fbf"}
+:::desmos{lang="en" link="https://www.desmos.com/calculator/288f9f9fbf"}
 :::
 
 ## Generalized projectile trajectory

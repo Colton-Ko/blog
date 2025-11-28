@@ -70,6 +70,11 @@ More examples: x^2^ + y^2^ = z^2^ and CO_2_ emissions.
 
 ## 4. Math (LaTeX)
 
+### Desmos graphs
+
+:::desmos{lang="en" link="https://www.desmos.com/calculator/0fd37b7cad"}
+:::
+
 ### Inline Math
 
 The quadratic formula is $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$.

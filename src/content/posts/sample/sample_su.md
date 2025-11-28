@@ -70,6 +70,11 @@ fn main() {
 
 ## 4. Математические формулы (LaTeX)
 
+### Десмос-графы
+
+:::desmos{lang="en" link="https://www.desmos.com/calculator/0fd37b7cad"}
+:::
+
 ### Встроенные формулы
 
 Квадратное уравнение: $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$.

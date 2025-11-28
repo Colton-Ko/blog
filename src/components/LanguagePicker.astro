@@ -181,10 +181,11 @@ const languages = getLanguages();
       // Update display with animation
       updateLanguageDisplay(newLang);
 
-      // Dispatch event for other components to react (like CodeBlockHandler)
+      // Dispatch events for other components to react
       window.dispatchEvent(
         new CustomEvent("language-change", { detail: newLang }),
       );
+      window.dispatchEvent(new Event("languagechange")); // For Desmos widget
     };
   }
 

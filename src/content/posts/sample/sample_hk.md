@@ -70,6 +70,11 @@ Mac 用戶貼上就撳 <kbd>⌘</kbd> + <kbd>V</kbd>。
 
 ## 4. 數學公式（LaTeX）
 
+### Desmos 圖
+
+:::desmos{lang="en" link="https://www.desmos.com/calculator/0fd37b7cad"}
+:::
+
 ### 行內數學
 
 二次方程根嘅公式係 $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$。

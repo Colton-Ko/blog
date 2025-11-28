@@ -69,6 +69,11 @@ Contoh lain: x^2^ + y^2^ = z^2^ dan emisi CO_2_
 
 ## 4. Rumus Matematika (LaTeX)
 
+### Desmos grafik
+
+:::desmos{lang="en" link="https://www.desmos.com/calculator/0fd37b7cad"}
+:::
+
 ### Rumus Inline
 
 Rumus kuadrat: $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$

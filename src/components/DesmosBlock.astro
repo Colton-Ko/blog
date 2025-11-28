@@ -1,0 +1,71 @@
+---
+/**
+ * DesmosBlock component - Interactive Desmos calculator with click-to-load
+ *
+ * @example
+ * <DesmosBlock
+ *   key="API_KEY"
+ *   link="https://www.desmos.com/calculator/abc123"
+ *   lang="en"
+ * />
+ */
+
+import { generateDesmosHTML } from "./desmos-template.ts";
+import { DEFAULT_LANGUAGE } from "../../config.language";
+
+interface Props {
+    key: string;
+    state?: string;
+    link?: string;
+    lang?: string;
+    height?: string;
+    width?: string;
+}
+
+const {
+    key,
+    state = "",
+    link,
+    lang = DEFAULT_LANGUAGE,
+    height = "500px",
+    width = "100%",
+} = Astro.props;
+
+const uniqueId = `calculator-${Math.random().toString(36).substring(2, 9)}`;
+
+// If link is provided, fetch the state (server-side)
+let calculatorState = state;
+if (link && !state) {
+    try {
+        const response = await fetch(link, {
+            headers: { Accept: "application/json" },
+        });
+        if (response.ok) {
+            const jsonData = await response.json();
+            if (jsonData?.state) {
+                calculatorState = JSON.stringify(jsonData.state);
+            }
+        }
+    } catch (error) {
+        console.error(
+            `[DesmosBlock] Failed to fetch state from ${link}`,
+            error,
+        );
+    }
+}
+
+// Generate HTML using shared template
+const html = generateDesmosHTML({ uniqueId, width, height });
+---
+
+<Fragment set:html={html} />
+
+<script type="module" define:vars={{ uniqueId, key, lang, calculatorState }}>
+    import { initDesmosWidget } from "../scripts/desmos-widget.js";
+
+    initDesmosWidget(uniqueId, {
+        key: key,
+        lang: lang,
+        state: calculatorState,
+    });
+</script>
