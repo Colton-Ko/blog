@@ -261,16 +261,16 @@
 <style>
     /* Mermaid diagrams */
     :global(.mermaid) {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 1.5rem auto; /* Center horizontally */
-        display: block; /* Ensure it takes up width to allow centering */
-        width: 100%; /* Full width for hover area */
+        background-color: var(--color-bg-white);
+        padding: var(--spacing-md);
+        border-radius: var(--radius-lg);
+        margin: var(--spacing-lg) auto;
+        display: block;
+        width: 100%;
         box-sizing: border-box;
         cursor: pointer;
-        transition: background-color 0.2s ease;
-        text-align: center; /* Center the SVG content */
+        transition: background-color var(--transition-base) ease;
+        text-align: center;
     }
 
     :global(.mermaid:hover) {
@@ -279,29 +279,29 @@
 
     /* Mermaid block wrapper when expanded */
     :global(.mermaid-block-wrapper) {
-        border-radius: 0.5rem;
+        border-radius: var(--radius-lg);
         overflow: hidden;
         border: 1px solid transparent;
         border-width: 0;
         background-color: transparent;
-        margin: 1.5rem auto;
+        margin: var(--spacing-lg) auto;
         max-width: 100%;
     }
 
     :global(.mermaid-block-wrapper .code-block-header) {
-        border-bottom: 1px solid #d1d5db;
+        border-bottom: 1px solid var(--color-gray-300);
         overflow: hidden;
         padding: 0;
     }
 
     :global(.mermaid-source) {
-        background-color: #f9fafb;
+        background-color: var(--color-gray-50);
         padding: 0;
         font-family: "Courier New", Courier, monospace;
         font-size: 0.875rem;
         overflow-x: auto;
         overflow-y: auto;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--color-gray-200);
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
@@ -318,16 +318,16 @@
     }
 
     :global(.mermaid-block-wrapper .mermaid) {
-        background-color: white;
+        background-color: var(--color-bg-white);
         margin: 0 auto;
-        padding: 1rem;
+        padding: var(--spacing-md);
         width: 100%;
         box-sizing: border-box;
         cursor: pointer;
         display: block;
         transition:
-            background-color 0.3s ease-in-out,
-            padding 0.3s ease-in-out;
+            background-color var(--transition-slow) ease-in-out,
+            padding var(--transition-slow) ease-in-out;
     }
 
     :global(.mermaid-block-wrapper .mermaid:hover) {

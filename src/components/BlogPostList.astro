@@ -78,21 +78,21 @@ const filteredPosts = Object.entries(postsBySlug)
     .post-list {
         list-style: none;
         padding: 0;
-        margin: 2rem 0;
+        margin: var(--spacing-xl) 0;
     }
 
     .post-item {
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        background: rgba(255, 255, 255, 0.5);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
+        margin-bottom: var(--spacing-xl);
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-xl);
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border-light);
+        transition: all var(--transition-base) ease;
     }
 
     .post-item:hover {
-        background: rgba(255, 255, 255, 0.8);
-        border-color: rgba(0, 0, 0, 0.1);
+        background: var(--color-bg-hover);
+        border-color: var(--color-border-medium);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
@@ -104,14 +104,14 @@ const filteredPosts = Object.entries(postsBySlug)
     }
 
     .post-title {
-        margin: 0 0 0.5rem 0;
+        margin: 0 0 var(--spacing-sm) 0;
         font-size: 1.5rem;
-        color: #1a1a1a;
+        color: var(--color-text-dark);
     }
 
     .post-description {
         margin: 0;
-        color: #666;
+        color: var(--color-text-muted);
         line-height: 1.6;
     }
 </style>

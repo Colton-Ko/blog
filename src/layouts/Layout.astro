@@ -92,12 +92,73 @@ import { ClientRouter } from "astro:transitions";
 
     <style>
       :root {
-        --accent: #2563eb;
-        --accent-light: #3b82f6;
-        --accent-dark: #1e40af;
-        --gray: #6b7280;
-        --gray-light: #f3f4f6;
-        --gray-dark: #1f2937;
+        /* Color System */
+        --color-accent: #2563eb;
+        --color-accent-light: #3b82f6;
+        --color-accent-dark: #1e40af;
+
+        --color-gray-50: #f9fafb;
+        --color-gray-100: #f3f4f6;
+        --color-gray-200: #e5e7eb;
+        --color-gray-300: #d1d5db;
+        --color-gray-400: #9ca3af;
+        --color-gray-500: #6b7280;
+        --color-gray-600: #4b5563;
+        --color-gray-700: #374151;
+        --color-gray-800: #1f2937;
+        --color-gray-900: #111827;
+
+        --color-blue-50: #eff6ff;
+        --color-blue-200: #bfdbfe;
+
+        --color-text-primary: #1f2937;
+        --color-text-secondary: #6b7280;
+        --color-text-dark: #1a1a1a;
+        --color-text-muted: #666666;
+
+        --color-bg-white: #ffffff;
+        --color-bg-overlay: rgba(255, 255, 255, 0.95);
+        --color-bg-card: rgba(255, 255, 255, 0.5);
+        --color-bg-hover: rgba(255, 255, 255, 0.8);
+
+        --color-highlight: #fef08a;
+        --color-success: #10b981;
+        --color-error: #ef4444;
+
+        --color-border-light: rgba(0, 0, 0, 0.05);
+        --color-border-medium: rgba(0, 0, 0, 0.1);
+
+        /* Legacy aliases for backward compatibility */
+        --accent: var(--color-accent);
+        --accent-light: var(--color-accent-light);
+        --accent-dark: var(--color-accent-dark);
+        --gray: var(--color-gray-500);
+        --gray-light: var(--color-gray-100);
+        --gray-dark: var(--color-gray-800);
+
+        /* Spacing System */
+        --spacing-xs: 0.25rem;
+        --spacing-sm: 0.5rem;
+        --spacing-md-sm: 0.75rem;
+        --spacing-md: 1rem;
+        --spacing-lg: 1.5rem;
+        --spacing-xl: 2rem;
+
+        /* Border Radius */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-2xl: 1rem;
+
+        /* Transitions */
+        --transition-fast: 0.15s;
+        --transition-base: 0.2s;
+        --transition-slow: 0.3s;
+
+        /* Z-index layers */
+        --z-overlay: 9999;
+        --z-modal: 10;
       }
 
       * {
@@ -106,91 +167,96 @@ import { ClientRouter } from "astro:transitions";
 
       html {
         font-family: system-ui, sans-serif;
-        background: #ffffff;
-        color: #1f2937;
+        background: var(--color-bg-white);
+        color: var(--color-text-primary);
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+
+      html::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
       }
 
       body {
         margin: 0;
-        padding: 0; /* Remove padding from body to allow full-width header */
+        padding: 0;
         line-height: 1.6;
       }
 
       main {
         max-width: 800px;
         margin: 0 auto;
-        padding: 0 2rem 2rem 2rem;
+        padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
       }
 
       h1 {
         font-size: 2.5rem;
         font-weight: 700;
         line-height: 1.2;
-        margin-bottom: 1rem;
-        color: var(--gray-dark);
+        margin-bottom: var(--spacing-md);
+        color: var(--color-gray-800);
       }
 
       h2 {
         font-size: 1.875rem;
         font-weight: 600;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-        color: var(--gray-dark);
+        margin-top: var(--spacing-xl);
+        margin-bottom: var(--spacing-md);
+        color: var(--color-gray-800);
       }
 
       h3 {
         font-size: 1.5rem;
         font-weight: 600;
-        margin-top: 1.5rem;
+        margin-top: var(--spacing-lg);
         margin-bottom: 0.75rem;
-        color: var(--gray-dark);
+        color: var(--color-gray-800);
       }
 
       /* Highlighting support */
       :global(mark) {
-        background-color: #fef08a;
-        padding: 0.125rem 0.25rem;
-        border-radius: 0.25rem;
+        background-color: var(--color-highlight);
+        padding: 0.125rem var(--spacing-xs);
+        border-radius: var(--radius-sm);
       }
 
-      /* Keyboard key styling - Global because it's in slotted content */
+      /* Keyboard key styling */
       :global(kbd) {
-        background-color: #f3f4f6;
-        border: 1px solid #d1d5db;
+        background-color: var(--color-gray-100);
+        border: 1px solid var(--color-gray-300);
         border-bottom-width: 3px;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 0 #e5e7eb;
-        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 2px 0 var(--color-gray-200);
+        padding: var(--spacing-xs) var(--spacing-sm);
         font-family: ui-monospace, monospace;
         font-size: 0.875em;
         font-weight: 600;
-        color: #374151;
+        color: var(--color-gray-700);
         display: inline-block;
         transition: all 0.1s ease-in-out;
         cursor: pointer;
-        vertical-align: middle; /* Center with surrounding text */
-        line-height: 1.5; /* Consistent height */
+        vertical-align: middle;
+        line-height: 1.5;
       }
 
       :global(kbd:hover) {
         transform: translateY(-2px);
-        box-shadow: 0 4px 0 #e5e7eb;
+        box-shadow: 0 4px 0 var(--color-gray-200);
       }
 
       :global(kbd:active) {
         transform: translateY(1px);
-        box-shadow: 0 1px 0 #e5e7eb;
-        /* Keep border-bottom-width consistent to prevent layout shift */
+        box-shadow: 0 1px 0 var(--color-gray-200);
       }
 
       /* Links */
       :global(a) {
-        color: var(--accent);
+        color: var(--color-accent);
         text-decoration: none;
       }
 
       :global(a:hover) {
-        color: var(--accent-dark);
+        color: var(--color-accent-dark);
         text-decoration: underline;
       }
     </style>
@@ -208,13 +274,8 @@ import { ClientRouter } from "astro:transitions";
 
     <!-- Loading overlay for slow networks -->
     <div id="page-loading-overlay" class="page-loading-hidden">
-      <div
-        style="width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #333; border-radius: 50%; animation: spin 0.8s linear infinite;"
-      >
-      </div>
-      <div style="margin-top: 16px; color: #666; font-family: system-ui;">
-        Loading...
-      </div>
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading...</div>
     </div>
 
     <script>
@@ -279,11 +340,12 @@ import { ClientRouter } from "astro:transitions";
     </script>
 
     <style>
+      /* Loading Overlay */
       #page-loading-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(255, 255, 255, 0.95);
-        z-index: 9999;
+        background: var(--color-bg-overlay);
+        z-index: var(--z-overlay);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -297,12 +359,27 @@ import { ClientRouter } from "astro:transitions";
 
       .page-loading-visible {
         opacity: 1;
-        animation: fadeIn 0.3s ease-out;
+        animation: fadeIn var(--transition-slow) ease-out;
       }
 
       .page-loading-fadeout {
         opacity: 0;
-        transition: opacity 0.2s ease-in;
+        transition: opacity var(--transition-base) ease-in;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--color-gray-200);
+        border-top-color: var(--color-gray-700);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .loading-text {
+        margin-top: var(--spacing-md);
+        color: var(--color-text-muted);
+        font-family: system-ui, sans-serif;
       }
 
       @keyframes fadeIn {

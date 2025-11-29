@@ -7,10 +7,10 @@ export interface LanguageConfig {
 
 export const languages: Record<string, string> = {
     us: "American english",
-    tw: "臺灣中文",
+    tw: "LN0",
     id: "Bahasa Indonesia",
     su: "Русский язык",
-    hk: "香港廣東話"
+    hk: "LN1"
 };
 
 export const DEFAULT_LANGUAGE = "us";
