@@ -219,7 +219,7 @@ import { ClientRouter } from "astro:transitions";
 
     <script>
       // Show loading overlay if page transition takes too long (progressive fallback)
-      let loadingTimer;
+      let loadingTimer: NodeJS.Timeout;
       const isInitialLoad = document.readyState !== "complete";
 
       // Handle initial page load (refresh)

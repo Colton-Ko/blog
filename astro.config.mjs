@@ -10,10 +10,9 @@ import remarkDirective from 'remark-directive';
 import remarkDesmos from './src/plugins/remark-desmos.mjs';
 import remarkHighlight from './src/plugins/remark-highlight.mjs';
 import remarkSubSup from './src/plugins/remark-subsup.mjs';
-import remarkMathSource from './src/plugins/remark-math-source.mjs';
+import remarkLatexSource from './src/plugins/remark-latex-source.mjs';
 import rehypePreserveMermaid from './src/plugins/rehype-preserve-mermaid.mjs';
 import reHypeMermaidClass from './src/plugins/rehype-mermaid-class.mjs';
-import rehypeKatexSource from './src/plugins/rehype-katex-source.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,7 +23,7 @@ export default defineConfig({
             remarkDirective,
             remarkDesmos,
             remarkMath,
-            remarkMathSource, // Preserve LaTeX source before KaTeX processes it
+            remarkLatexSource, // Preserve LaTeX source before KaTeX processes it
             remarkHighlight,
             remarkSubSup,
         ],

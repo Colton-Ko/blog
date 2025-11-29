@@ -6,7 +6,7 @@ export default function remarkMathSource() {
       // 1. Determine if this is inline ($...$) or block ($$...$$) math
       const isBlock = node.type === 'math';
       const wrapperTag = isBlock ? 'div' : 'span';
-      
+
       // 'math-display' and 'math-inline' are the default classes rehype-katex looks for
       const mathClass = isBlock ? 'math-display' : 'math-inline';
 
