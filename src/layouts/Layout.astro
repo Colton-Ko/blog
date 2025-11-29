@@ -98,6 +98,7 @@ import { ClientRouter } from "astro:transitions";
         --color-accent-dark: #1e40af;
 
         --color-gray-50: #f9fafb;
+        --color-gray-75: #f5f5f5;
         --color-gray-100: #f3f4f6;
         --color-gray-200: #e5e7eb;
         --color-gray-300: #d1d5db;
@@ -120,6 +121,7 @@ import { ClientRouter } from "astro:transitions";
         --color-bg-overlay: rgba(255, 255, 255, 0.95);
         --color-bg-card: rgba(255, 255, 255, 0.5);
         --color-bg-hover: rgba(255, 255, 255, 0.8);
+        --color-dim-hover: rgba(0, 0, 0, 0.03);
 
         --color-highlight: #fef08a;
         --color-success: #10b981;
@@ -337,9 +339,7 @@ import { ClientRouter } from "astro:transitions";
         loadingOverlay.show(),
       );
 
-      document.addEventListener("astro:page-load", () =>
-        loadingOverlay.hide(),
-      );
+      document.addEventListener("astro:page-load", () => loadingOverlay.hide());
     </script>
 
     <style>

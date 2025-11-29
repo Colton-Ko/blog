@@ -38,21 +38,13 @@
         );
     }
 
-    function extractLatexSource(mathBlock: Element): string | null {
+    function extractLatexSource(mathBlock: Element): string | undefined {
         // First try parent wrapper's data-source attribute (added by rehype-katex-source)
         const wrapper = mathBlock.parentElement;
         if (wrapper?.classList.contains("math-block-container")) {
             const dataSource = wrapper.getAttribute("data-source");
             if (dataSource) return dataSource;
         }
-
-        // Fallback: try data-latex attribute on the element itself
-        const dataLatex = mathBlock.getAttribute("data-source");
-        if (dataLatex) return dataLatex;
-
-        // Last resort: try to find annotation element (if MathML is present)
-        const annotation = mathBlock.querySelector(SELECTORS.ANNOTATION);
-        return annotation ? annotation.textContent : null;
     }
 
     function toggleMathBlock(mathBlock: Element, latexSource: string) {
@@ -131,8 +123,8 @@
         animate(
             wrapper,
             {
-                backgroundColor: "#f9fafb",
-                borderColor: "#e5e7eb",
+                backgroundColor: "var(--color-gray-50)",
+                borderColor: "var(--color-gray-200)",
                 borderWidth: "1px",
             },
             { duration: ANIMATION_DURATION },
@@ -238,72 +230,3 @@
     // Initialize on page load and after View Transitions
     document.addEventListener("astro:page-load", initMathBlocks);
 </script>
-
-<style>
-    /* Math blocks */
-    :global(.katex-display) {
-        overflow-x: auto;
-        padding: var(--spacing-md) 0;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        transition: background-color var(--transition-base) ease;
-        cursor: pointer;
-        border-radius: var(--radius-lg);
-    }
-
-    :global(.katex-display::-webkit-scrollbar) {
-        display: none; /* Chrome, Safari and Opera */
-    }
-
-    :global(.katex-display):hover {
-        scrollbar-width: none; /* Firefox */
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-
-    :global(.katex-display):hover::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* Math block wrapper when expanded */
-    :global(.math-block-wrapper) {
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        border: 1px solid transparent;
-        border-width: 0;
-        background-color: transparent;
-        margin: var(--spacing-md) 0;
-    }
-
-    :global(.math-block-wrapper .code-block-header) {
-        border-bottom: 1px solid var(--color-gray-300);
-        overflow: hidden;
-        padding: 0;
-    }
-
-    :global(.math-latex-source) {
-        background-color: var(--color-gray-50);
-        padding: 0;
-        font-family: "Courier New", Courier, monospace;
-        font-size: 0.875rem;
-        border-bottom: 1px solid var(--color-gray-200);
-    }
-
-    :global(.math-latex-source code) {
-        background: none;
-        padding: 0;
-    }
-
-    :global(.math-block-wrapper .katex-display) {
-        background-color: transparent;
-        margin: 0;
-        padding: var(--spacing-md);
-        cursor: pointer;
-        transition:
-            background-color var(--transition-slow) ease-in-out,
-            padding var(--transition-slow) ease-in-out;
-    }
-
-    :global(.math-block-wrapper .katex-display):hover {
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-</style>
