@@ -279,64 +279,67 @@ import { ClientRouter } from "astro:transitions";
     </div>
 
     <script>
-      // Show loading overlay if page transition takes too long (progressive fallback)
-      let loadingTimer: NodeJS.Timeout;
+      const LOADING_DELAY_MS = 500;
+      const FADEOUT_DURATION_MS = 200;
+
+      interface LoadingOverlay {
+        show(): void;
+        hide(): void;
+      }
+
+      function createLoadingOverlay(): LoadingOverlay {
+        const overlay = document.getElementById("page-loading-overlay");
+        let loadingTimer: NodeJS.Timeout | null = null;
+
+        return {
+          show(): void {
+            if (!overlay) return;
+
+            loadingTimer = setTimeout(() => {
+              if (document.readyState !== "complete") {
+                overlay.classList.remove("page-loading-hidden");
+                overlay.classList.add("page-loading-visible");
+              }
+            }, LOADING_DELAY_MS);
+          },
+
+          hide(): void {
+            if (loadingTimer) {
+              clearTimeout(loadingTimer);
+              loadingTimer = null;
+            }
+
+            if (overlay?.classList.contains("page-loading-visible")) {
+              overlay.classList.remove("page-loading-visible");
+              overlay.classList.add("page-loading-fadeout");
+
+              setTimeout(() => {
+                overlay.classList.remove("page-loading-fadeout");
+                overlay.classList.add("page-loading-hidden");
+              }, FADEOUT_DURATION_MS);
+            }
+          },
+        };
+      }
+
+      // Initialize loading overlay
+      const loadingOverlay = createLoadingOverlay();
       const isInitialLoad = document.readyState !== "complete";
 
       // Handle initial page load (refresh)
       if (isInitialLoad) {
-        const overlay = document.getElementById("page-loading-overlay");
-
-        // Show overlay after 500ms if page still loading
-        loadingTimer = setTimeout(() => {
-          if (overlay && document.readyState !== "complete") {
-            overlay.classList.remove("page-loading-hidden");
-            overlay.classList.add("page-loading-visible");
-          }
-        }, 500);
-
-        // Hide when page fully loaded
-        window.addEventListener("load", () => {
-          clearTimeout(loadingTimer);
-          if (overlay && overlay.classList.contains("page-loading-visible")) {
-            overlay.classList.remove("page-loading-visible");
-            overlay.classList.add("page-loading-fadeout");
-            setTimeout(() => {
-              overlay.classList.remove("page-loading-fadeout");
-              overlay.classList.add("page-loading-hidden");
-            }, 200);
-          }
-        });
+        loadingOverlay.show();
+        window.addEventListener("load", () => loadingOverlay.hide());
       }
 
       // Handle View Transitions (page navigation)
-      document.addEventListener("astro:before-preparation", () => {
-        const overlay = document.getElementById("page-loading-overlay");
+      document.addEventListener("astro:before-preparation", () =>
+        loadingOverlay.show(),
+      );
 
-        // Show overlay after 500ms (only on slow networks)
-        loadingTimer = setTimeout(() => {
-          if (overlay) {
-            overlay.classList.remove("page-loading-hidden");
-            overlay.classList.add("page-loading-visible");
-          }
-        }, 500);
-      });
-
-      document.addEventListener("astro:page-load", () => {
-        clearTimeout(loadingTimer);
-        const overlay = document.getElementById("page-loading-overlay");
-        if (overlay && overlay.classList.contains("page-loading-visible")) {
-          // Trigger fade out
-          overlay.classList.remove("page-loading-visible");
-          overlay.classList.add("page-loading-fadeout");
-
-          // Hide after animation completes
-          setTimeout(() => {
-            overlay.classList.remove("page-loading-fadeout");
-            overlay.classList.add("page-loading-hidden");
-          }, 200);
-        }
-      });
+      document.addEventListener("astro:page-load", () =>
+        loadingOverlay.hide(),
+      );
     </script>
 
     <style>

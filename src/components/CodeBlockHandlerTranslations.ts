@@ -6,22 +6,22 @@ export interface CodeBlockHandlerTranslations {
 }
 
 export const codeBlockHandlerTranslations: Record<string, CodeBlockHandlerTranslations> = {
-    us: {
+    'us': {
         ariaLabel: "Copy code to clipboard"
     },
-    tw: {
+    'tw': {
         ariaLabel: "複製代碼到剪貼簿"
     },
-    id: {
+    'id': {
         ariaLabel: "Salin kode ke clipboard"
     },
-    su: {
+    'su': {
         ariaLabel: "Копировать код в буфер обмена"
     },
-    hk: {
+    'hk': {
         ariaLabel: "複製代碼去剪貼簿"
     }
-};
+} as const satisfies Record<string, CodeBlockHandlerTranslations>;
 
 export function getCodeBlockHandlerTranslation(lang: string): CodeBlockHandlerTranslations {
     return codeBlockHandlerTranslations[lang] || codeBlockHandlerTranslations.us;

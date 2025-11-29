@@ -9,37 +9,37 @@ export interface SearchModalTranslations {
 }
 
 export const searchModalTranslations: Record<string, SearchModalTranslations> = {
-    us: {
+    'us': {
         placeholder: "Search",
         emptyState: "Start typing to search.",
         noResults: "No results found.",
         closeLabel: "Close search"
     },
-    tw: {
+    'tw': {
         placeholder: "搜尋",
         emptyState: "開始輸入以搜尋。",
         noResults: "沒有找到結果。",
         closeLabel: "關閉"
     },
-    id: {
+    'id': {
         placeholder: "Cari",
         emptyState: "Mulai mengetik untuk mencari.",
         noResults: "Tidak ada hasil.",
         closeLabel: "Tutup"
     },
-    su: {
+    'su': {
         placeholder: "Поиск",
         emptyState: "Начните вводить для поиска.",
         noResults: "Ничего не найдено.",
         closeLabel: "Закрыть поиск"
     },
-    hk: {
+    'hk': {
         placeholder: "搵嘢",
         emptyState: "開始打字搵嘢。",
         noResults: "搵唔到有符合條件嘅結果。",
         closeLabel: "關閉"
     }
-};
+} as const satisfies Record<string, SearchModalTranslations>;
 
 export function getSearchModalTranslation(lang: string): SearchModalTranslations {
     return searchModalTranslations[lang] || searchModalTranslations.us;

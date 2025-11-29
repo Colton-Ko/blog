@@ -5,11 +5,20 @@ const DEFAULT_LANG = getDefaultLanguage();
 
 export const prerender = true;
 
+interface SearchIndexItem {
+    title: string;
+    content: string;
+    slug: string;
+    lang: string;
+    url: string;
+    headingLevel: number;
+}
+
 export async function GET() {
     // Import all markdown files from posts
     const postFiles = import.meta.glob('/src/content/posts/**/*.md', { eager: true });
 
-    const searchIndex = [];
+    const searchIndex: SearchIndexItem[] = [];
 
     for (const [path, module] of Object.entries(postFiles)) {
         const post = module as Post; // Type assertion for glob imports
@@ -21,20 +30,10 @@ export async function GET() {
 
         // Extract slug from path
         const slugMatch = path.match(/\/posts\/([^/]+)\//);
-        const slug = slugMatch ? slugMatch[1] : '';
-
-        // Get plain text content (strip markdown/HTML)
-        try {
-            compiledContent()
-                .replace(/<[^>]*>/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        } catch {
-            // Ignore errors
-        }
+        const slug = slugMatch?.[1] ?? '';
 
         // Simple slugify function for headings
-        const slugify = (text: string) => {
+        const slugify = (text: string): string => {
             return text
                 .toString()
                 .toLowerCase()
@@ -55,7 +54,7 @@ export async function GET() {
         });
 
         // Process headings if we have raw content
-        const rawContent = post.rawContent ? post.rawContent() : '';
+        const rawContent = post.rawContent?.() ?? '';
         if (rawContent) {
             const lines = rawContent.split('\n');
 

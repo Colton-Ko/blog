@@ -2,10 +2,15 @@ import { visit } from 'unist-util-visit';
 
 /**
  * Remark plugin to convert ==highlighted text== to <mark>highlighted text</mark>
+ * @returns {(tree: import('unist').Node) => void} Transformer function
  */
 export default function remarkHighlight() {
     return (tree) => {
         visit(tree, 'text', (node, index, parent) => {
+            if (!parent || index === null || index === undefined) {
+                return;
+            }
+
             const { value } = node;
             const regex = /==([^=]+)==/g;
 
@@ -15,6 +20,9 @@ export default function remarkHighlight() {
 
             const children = [];
             let lastIndex = 0;
+
+            // Reset regex lastIndex after test
+            regex.lastIndex = 0;
 
             value.replace(regex, (match, content, offset) => {
                 // Add text before the match
@@ -44,7 +52,7 @@ export default function remarkHighlight() {
             }
 
             // Replace the node with the new children
-            if (children.length > 0) {
+            if (children.length > 0 && parent.children) {
                 parent.children.splice(index, 1, ...children);
             }
         });

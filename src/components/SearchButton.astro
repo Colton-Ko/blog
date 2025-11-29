@@ -20,11 +20,11 @@
 </button>
 
 <script>
-  function initSearchButton() {
+  function initSearchButton(): void {
     const searchButton = document.getElementById("search-button");
     if (!searchButton) return;
 
-    searchButton.onclick = () => {
+    searchButton.onclick = (): void => {
       window.dispatchEvent(new CustomEvent("open-search"));
     };
   }

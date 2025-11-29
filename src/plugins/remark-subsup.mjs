@@ -1,12 +1,17 @@
 import { visit } from 'unist-util-visit';
 
 /**
- * Remark plugin to convert ~subscript~ to <sub>subscript</sub>
+ * Remark plugin to convert _subscript_ to <sub>subscript</sub>
  * and ^superscript^ to <sup>superscript</sup>
+ * @returns {(tree: import('unist').Node) => void} Transformer function
  */
 export default function remarkSubSup() {
     return (tree) => {
         visit(tree, 'text', (node, index, parent) => {
+            if (!parent || index === null || index === undefined) {
+                return;
+            }
+
             const { value } = node;
             // Match _subscript_ or ^superscript^
             // We use _ for subscript, overriding standard markdown italics for _
@@ -18,6 +23,9 @@ export default function remarkSubSup() {
 
             const children = [];
             let lastIndex = 0;
+
+            // Reset regex lastIndex after test
+            regex.lastIndex = 0;
 
             value.replace(regex, (match, subMatch, subContent, supMatch, supContent, offset) => {
                 // Add text before the match
@@ -54,7 +62,7 @@ export default function remarkSubSup() {
             }
 
             // Replace the node with the new children
-            if (children.length > 0) {
+            if (children.length > 0 && parent.children) {
                 parent.children.splice(index, 1, ...children);
             }
         });
