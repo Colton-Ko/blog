@@ -1,5 +1,6 @@
 <script>
     import { animate } from "motion";
+    import { createCopyButton } from "../utils/createCopyButton";
 
     const ANIMATION_DURATION = 0.3;
     const SELECTORS = {
@@ -155,7 +156,10 @@
         langLabel.className = "code-block-language";
         langLabel.textContent = "latex";
 
-        const copyBtn = createCopyButton(latexSource);
+        const copyBtn = createCopyButton(
+            latexSource,
+            "Copy LaTeX to clipboard",
+        );
 
         header.appendChild(langLabel);
         header.appendChild(copyBtn);
@@ -176,55 +180,6 @@
         code.textContent = source;
         sourceDiv.appendChild(code);
         return sourceDiv;
-    }
-
-    function createCopyButton(text: string): HTMLElement {
-        const btn = document.createElement("button");
-        btn.className = "code-block-copy-btn";
-        btn.setAttribute("aria-label", "Copy LaTeX to clipboard");
-        btn.innerHTML = getCopyIcon();
-
-        btn.addEventListener("click", async (e) => {
-            e.stopPropagation();
-            try {
-                await navigator.clipboard.writeText(text);
-                showCopySuccess(btn);
-            } catch (err) {
-                console.error("Failed to copy LaTeX:", err);
-            }
-        });
-
-        return btn;
-    }
-
-    function showCopySuccess(btn: HTMLElement) {
-        btn.classList.add("copied");
-        btn.innerHTML = getCheckIcon();
-
-        setTimeout(() => {
-            btn.classList.remove("copied");
-            btn.classList.add("reverting");
-            btn.innerHTML = getCopyIcon();
-
-            setTimeout(() => btn.classList.remove("reverting"), 300);
-        }, 2000);
-    }
-
-    function getCopyIcon(): string {
-        return `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-        `;
-    }
-
-    function getCheckIcon(): string {
-        return `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        `;
     }
 
     // Initialize on page load and after View Transitions
