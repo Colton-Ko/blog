@@ -258,13 +258,7 @@
     document.addEventListener("astro:page-load", initMermaidBlocks);
 </script>
 
-<style is:global>
-    /* Performance: Skip rendering off-screen Mermaid content */
-    .mermaid-container {
-        content-visibility: auto;
-        contain-intrinsic-size: 1px 300px; /* Estimate height to prevent scrollbar jumping */
-    }
-
+<style>
     /* Mermaid diagrams */
     :global(.mermaid) {
         background-color: var(--color-bg-white);
