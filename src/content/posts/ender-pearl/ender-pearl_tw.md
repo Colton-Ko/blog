@@ -92,11 +92,11 @@ graph TB
 終界珍珠的差動位移由以下三個公式定義，這是已知事實。
 (來源: [Xcom6000](https://youtu.be/Wc1E1zR40gw))
 $$
-\begin{align}
+\begin{align*}
 \Delta X_{t+1} &= 0.99 \Delta X_t\\
 \Delta Y_{t+1} &= 0.99 \Delta Y_t - 0.03\\
 \Delta Z_{t+1} &= 0.99 \Delta Z_t\\
-\end{align}
+\end{align*}
 $$
 而 **終界珍珠的阻力** 是 0.99 ，-0.03是 「**地心引力**」。
 
@@ -110,12 +110,12 @@ $$
 
 這是所有差動位移的總和 $\vec{S}(t)$。
 $$
-\begin{align}
+\begin{align*}
 \vec{S}(t) &= \sum_{\tau=0}^t \Delta \vec{S_{\tau}} \\
 S_x(t) &= \sum_{\tau=0}^t \Delta x_\tau  \\
 S_y(t) &= \sum_{\tau=0}^t \Delta y_\tau  \\
 S_z(t) &= \sum_{\tau=0}^t \Delta z_\tau  \\
-\end{align}
+\end{align*}
 $$
 #### X-Z 軸方向
 
@@ -130,31 +130,31 @@ $$
 
 以下引 X 軸方向 為例，和 Z 軸方向的求導方法相同。以下 $\Delta x$ 指 X 軸方向的差動位移。
 $$
-\begin{align}
+\begin{align*}
 \Delta x_{0} &= u_x\\
 \Delta x_{1} &= 0.99 u_x\\
 \Delta x_{2} &= 0.99 (\Delta x_{1})\\
 \Delta x_{3} &= 0.99 (\Delta x_{2})\\
 \Delta x_{k} &= 0.99^k u_x
-\end{align}
+\end{align*}
 $$
 那麽，其總和就是拋射軌跡的 X 軸方向分量，對於時間 $t$ 的函數 $S_x(t)$。
 $$
-\begin{align}
+\begin{align*}
 S_x(t) &= \sum_{k=0}^t \Delta x_k\\
 	&= u_x\sum_{k=0}^t 0.99^k\\
 	&= u_x(\frac{1-0.99^t}{1-0.99}) &\quad\quad\text{幾何數列的總和}\\
 	&= 100u_x(1-0.99^t)
-\end{align}
+\end{align*}
 $$
 假設飛行高度不變（$\Delta y_t$ = 0），若 t 趨向無限（$t\to\infty$），飛行距離則為：
 $$
-\begin{align}
+\begin{align*}
 \lim_{t\to\infty}S_x(t) &= \lim_{t\to\infty}\sum_{k=0}^t \Delta x_k\\
 	&= \lim_{t\to\infty}u_x\sum_{k=0}^t 0.99^k\\
 	&= u_x \frac{1}{1-0.99}\\
 	&= 100u_x
-\end{align}
+\end{align*}
 $$
 Z 軸方向的求導方法相同。
 
@@ -171,17 +171,17 @@ Z 軸方向的求導方法相同。
 
 計算 Y 軸方向的差動位移公式需同時考慮 **終界珍珠的阻力** 和 **地心引力**。因此需要更多步驟來處理。
 $$
-\begin{align}
+\begin{align*}
 \Delta y_{0} &= u_y\\
 \Delta y_{1} &= 0.99 u_y - 0.03\\
 \Delta y_{2} &= 0.99 (\Delta y_{1}) - 0.03\\
 \Delta y_{3} &= 0.99 (\Delta y_{2}) - 0.03\\
 \vdots
-\end{align}
+\end{align*}
 $$
 化簡以上，
 $$
-\begin{align}
+\begin{align*}
 x_1 &= ax + b	&\text{對於符號 $a,b,x_t$}\\
 x_2 &= ax_1 + b\\
 	&= a(ax + b) + b\\
@@ -204,93 +204,93 @@ aP(k)+b 		&= a(a^kx+b(\frac{1-a^{k}}{1-a})) + b\\
 &\therefore\text{$P(k) \to P(k+1)$ 成立。}\\\\
 
 &\therefore\text{$x_n \equiv a^nx+b(\frac{1-a^{n}}{1-a})$}\\
-\end{align}
+\end{align*}
 $$
 代入 $a=0.99,b=-0.03$.
 $$
-\begin{align}
+\begin{align*}
 \Delta y_{t} &= 0.99^tu_y-0.03(\frac{1-0.99^t}{1-0.99})\\
 \Delta y_{t} &= 0.99^tu_y-3(1-0.99^t)\\
 \Delta y_{t} &= 0.99^t(u_y+3)-3
-\end{align}
+\end{align*}
 $$
 
 ###### Y 軸方向的軌跡公式
 
 $$
-\begin{align}
+\begin{align*}
 S_y(t) &= 	\sum_{\tau=0}^t \Delta y_{\tau} \\
 	&=	\sum_{\tau=0}^t 0.99^\tau(u_y+3)-3\\
 	&=	(u_y+3)(\frac{1-0.99^t}{1-0.99})-3t\\
 	&=	100(u_y+3)(1-0.99^t)-3t\\
-\end{align}
+\end{align*}
 $$
 
 ## 繪畫軌跡曲線
 
 我們已經推導了對每一分量的軌跡公式。$L_{xz}(t)$ 是在X-Z平面移動的總距離。
 $$
-\begin{align}
+\begin{align*}
 S_x(t) = x(t)	&=	100u_x(1-0.99^t)\\
 S_y(t) = y(t)	&=	100(u_y+3)(1-0.99^t)-3t\\
 S_z(t) = z(t)	&=	100u_z(1-0.99^t)\\
 L_{xz}(t)		&=	\sqrt{S_x^2(t) + S_z^2(t)}\\
 				&=	\sqrt{x^2(t) + z^2(t)}\\
 				&=	100(1-0.99^t)\sqrt{u_x^2 + u_z^2}
-\end{align}
+\end{align*}
 $$
 
 ### X-Y 面
 
 我們須先推導 $x(t)$ 的逆函數來繪畫 $y(x)$。
 $$
-\begin{align}
+\begin{align*}
 x(t) &= 100u_x(1-0.99^t)\\
 \frac{x(t)}{100u_x} &= 1-0.99^t\\
 0.99^t &= 1-\frac{x(t)}{100u_x}\\
 t(x) &= \log_{0.99}{(1-\frac{x}{100u_x})} &\text{$x(t)$ 逆函數}\\
-\end{align}
+\end{align*}
 $$
 將  $t(x)$ 代入 $t$ 來計算 $y(t)$，
 $$
-\begin{align}
+\begin{align*}
 y(t)	&=	100(u_y+3)(1-0.99^t)-3t\\
 y(t(x)) 	&=	100(u_y+3)(1-0.99^{t(x)})-3t(x)
-\end{align}
+\end{align*}
 $$
 代入  $t(x) = \log_{0.99}{(1-\frac{x}{100u_x})}$，
 $$
-\begin{align}
+\begin{align*}
 y(t(x)) 	&=	100(u_y+3)(1-0.99^{t(x)})-3t(x)\\
 y(x) 	&=	100(u_y+3)(1-0.99^{\frac{\log(1-\frac{x}{100u_x})}{\log(99)-2}})-3\frac{\log(1-\frac{x}{100u_x})}{\log(99)-2}\\
-\end{align}
+\end{align*}
 $$
 
 ### $L_{xz}$-Y 面
 
 推導方法和求得 X-Y 面的方法相似，唯一相異為考慮 $L_{xz}(t)$ 而非 $x(t)$。
 $$
-\begin{align}
+\begin{align*}
 L_{xz}(t)	&=	100(1-0.99^t)\sqrt{u_x^2 + u_z^2}			\\
 \frac{L_{xz}(t)}{100\sqrt{u_x^2 + u_z^2}}	&=	1-0.99^t		\\
 0.99^t		&=	1-\frac{L_{xz}(t)}{100\sqrt{u_x^2 + u_z^2}}	\\
 t(L_{xz}) 	&= \log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})} &\text{$L_{xz}(t)$的逆函數}\\
-\end{align}
+\end{align*}
 $$
 把 $t= t(L_{xz})$ 代入 $y(t)$。
 $$
-\begin{align}
+\begin{align*}
 y(t)	&=	100(u_y+3)(1-0.99^t)-3t\\
 y(t(L_{xz})) 	&=	100(u_y+3)(1-0.99^{t(L_{xz})})-3t(L_{xz})
-\end{align}
+\end{align*}
 $$
 最終答案為
 $$
-\begin{align}
+\begin{align*}
 y(t(L_{xz})) 	&=	100(u_y+3)(1-0.99^{t(L_{xz})})-3t(L_{xz})	\\
 y(L_{xz}) 	&=	100(u_y+3)(1-0.99^{\log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})}})-3\log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})}\\
 &=	100(u_y+3)(\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})-3\log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})}\\
-\end{align}
+\end{align*}
 $$
 
 #### 結果 (Desmos)
@@ -302,11 +302,11 @@ $$
 
 留意以下
 $$
-\begin{align}
+\begin{align*}
 \Delta x_1 &= \alpha u_x\\
 \Delta y_1 &= \alpha u_y + g\\
 \Delta z_1 &= \alpha u_z
-\end{align}
+\end{align*}
 $$
 上一章節推導了以 $\alpha=0.99, g=-0.03$ 的特解，以下將推算其通解。
 
@@ -314,11 +314,11 @@ $$
 
 差動位移的計算方法和之前的非常相似，$t$ 代表時間。
 $$
-\begin{align}
+\begin{align*}
 \Delta x_t &= \alpha^t u_x\\
 \Delta y_t &= \alpha^t u_y + g \frac{1-\alpha^t}{1-\alpha}\\
 \Delta z_t &= \alpha^t u_z
-\end{align}
+\end{align*}
 $$
 
 ### 拋射軌跡公式的分量
@@ -329,7 +329,7 @@ $$
 
 沿用之前使用過的符號， $S_x(t)=x(t), S_z(t)=z(t), L_{xz}(t)=\sqrt{x^2(t)+z^2(t)}$
 $$
-\begin{align}
+\begin{align*}
 x(t) 		&= \sum_{\tau=0}^t \alpha^\tau u_x\\
 			&= u_x\sum_{\tau=0}^t\alpha^\tau\\
 			&= u_x \frac{1-\alpha^t}{1-\alpha}\\
@@ -341,14 +341,14 @@ z(t) 		&= \sum_{\tau=0}^t \alpha^\tau u_z\\
 L_{xz}(t) 	&= \sqrt{x^2(t)+z^2(t)}\\
 			&= \sqrt{(u_x \frac{1-\alpha^t}{1-\alpha})^2+(u_z \frac{1-\alpha^t}{1-\alpha})^2}\\
 			&= \frac{1-\alpha^t}{1-\alpha}\sqrt{u_x^2+u_z^2}
-\end{align}
+\end{align*}
 $$
 
 #### Y 軸方向
 
 推導 Y 軸方向需要一點點苦功和謹慎。~~因為我大意錯了幾次。~~
 $$
-\begin{align}
+\begin{align*}
  S_y(t)&=y(t) \\
 y(t)	&=	\sum_{\tau=0}^t (\alpha^\tau u_y+g(\frac{1-\alpha^\tau}{1-\alpha}))\\
 		&=	u_y\sum_{\tau=0}^t \alpha^\tau + \frac{g}{1-\alpha}\sum_{\tau=0}^t(1-\alpha^\tau)\\
@@ -356,7 +356,7 @@ y(t)	&=	\sum_{\tau=0}^t (\alpha^\tau u_y+g(\frac{1-\alpha^\tau}{1-\alpha}))\\
 		&=	u_y\frac{1-\alpha^t}{1-\alpha} + \frac{gt}{1-\alpha} -\frac{g}{1-\alpha}\frac{1-\alpha^t}{1-a}\\
 		&=	u_y\frac{1-\alpha^t}{1-\alpha} + \frac{gt}{1-\alpha} -g\frac{(1-\alpha^t)}{(1-\alpha)^2}\\
 		&= (u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^t}{1-\alpha}) + \frac{gt}{1-\alpha}
-\end{align}
+\end{align*}
 $$
 
 #### 於 $L_{xz}$-Y 面繪製通用拋射軌跡公式
@@ -364,27 +364,27 @@ $$
 ##### 推算 $L_{xz}(t) = \sqrt{S_x^2(t)+S_z^2(t)}$ 的逆函數
 
 $$
-\begin{align}
+\begin{align*}
 L_{xz}(t) &= \frac{1-\alpha^t}{1-\alpha}\sqrt{u_x^2+u_z^2}\\
 L_{xz}(t)\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}} &=1-\alpha^t\\
 \alpha^t &=1-L_{xz}(t)\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}\\
 t(L_{xz}) &= \log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}}) &\text{$L_{xz}(t)$的逆函數}
-\end{align}
+\end{align*}
 $$
 
 ##### 代入 $t=t(L_{xz})$
 
 $$
-\begin{align}
+\begin{align*}
 y(t)			&= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^t}{1-\alpha}) + \frac{gt}{1-\alpha}\\
 y(t(L_{xz}))	&= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^{t(L_{xz})}}{1-\alpha}) + \frac{gt(L_{xz})}{1-\alpha}
-\end{align}
+\end{align*}
 $$
 
 ##### 最後一步...
 
 $$
-\begin{align}
+\begin{align*}
 y(t(L_{xz}))	
 &= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^{t(L_{xz})}}{1-\alpha}) + \frac{gt(L_{xz})}{1-\alpha}\\
 &= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^{\log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}}))}}{1-\alpha}) + \frac{g\log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}})}{1-\alpha}\\
@@ -392,7 +392,7 @@ y(t(L_{xz}))
 &= 	(u_y-\frac{g}{1-\alpha})(\frac{L_{xz}}{\sqrt{u_x^2+u_z^2}}) + \frac{g}{1-\alpha}\log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}})\\
 \\
 &=\left(u_{y}-\frac{g}{1-\alpha}\right)\left(\frac{L_{xz}}{\sqrt{u_{x}^{2}+u_{z}^{2}}}\right)+\frac{g}{1-\alpha}\log_{\alpha}\left(1-\frac{L_{xz}\left(1-\alpha\right)}{\sqrt{u_{x}^{2}+u_{z}^{2}}}\right)
-\end{align}
+\end{align*}
 $$
 
 ## 編者

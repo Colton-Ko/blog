@@ -20,7 +20,7 @@ date: 2020-09-13
 
 The displacement differential vector $\Delta \vec{S_t}$ determines how far the projectile needs to be travelled in the next game tick.
 $$
-\begin{align}
+\begin{align*}
 \Delta \vec{S_t} = 
 
 \begin{pmatrix}
@@ -29,7 +29,7 @@ $$
 \Delta z_t \\
 
 \end{pmatrix}
-\end{align}
+\end{align*}
 $$
 Where componenets of $\Delta \vec{S_t} $ are the following
 
@@ -41,7 +41,7 @@ Where componenets of $\Delta \vec{S_t} $ are the following
 
 The initial velocity **vector** $\vec{u}$ (often supplied by TNT explosions) are given by
 $$
-\begin{align}
+\begin{align*}
 \vec{u} = 
 
 \begin{pmatrix}
@@ -50,7 +50,7 @@ $$
 \Delta z_0 \\
 
 \end{pmatrix}
-\end{align}
+\end{align*}
 $$
 The components of $\vec{u}$ are symbolized as below
 
@@ -101,11 +101,11 @@ graph TB
 The displacement differential are given by the following three formulas. These are known facts.
 (Source: [Xcom6000](https://youtu.be/Wc1E1zR40gw))
 $$
-\begin{align}
+\begin{align*}
 \Delta X_{t+1} &= 0.99 \Delta X_t\\
 \Delta Y_{t+1} &= 0.99 \Delta Y_t - 0.03\\
 \Delta Z_{t+1} &= 0.99 \Delta Z_t\\
-\end{align}
+\end{align*}
 $$
 Where 0.99 is the **pearl drag**, -0.03 would be the **gravity**.
 
@@ -119,12 +119,12 @@ Trajectory is the flight curve that an ender pearl has travelled.
 
 This would be the sum of displacement differential $\vec{S}(t)$ In other words
 $$
-\begin{align}
+\begin{align*}
 \vec{S}(t) &= \sum_{\tau=0}^t \Delta \vec{S_{\tau}} \\
 S_x(t) &= \sum_{\tau=0}^t \Delta x_\tau  \\
 S_y(t) &= \sum_{\tau=0}^t \Delta y_\tau  \\
 S_z(t) &= \sum_{\tau=0}^t \Delta z_\tau  \\
-\end{align}
+\end{align*}
 $$
 #### X-Z direction
 
@@ -139,31 +139,31 @@ Deriving on X-Z would be rather simple as it is just a matter of the powers of 0
 
 Take X direction for example, same for Z direction. In here, the $\Delta x$ means the displacement differential on X direction.
 $$
-\begin{align}
+\begin{align*}
 \Delta x_{0} &= u_x\\
 \Delta x_{1} &= 0.99 u_x\\
 \Delta x_{2} &= 0.99 (\Delta x_{1})\\
 \Delta x_{3} &= 0.99 (\Delta x_{2})\\
 \Delta x_{k} &= 0.99^k u_x
-\end{align}
+\end{align*}
 $$
 Then its sum, i.e. the X component of the trajectory with respect to time $S_x(t)$ would be
 $$
-\begin{align}
+\begin{align*}
 S_x(t) &= \sum_{k=0}^t \Delta x_k\\
 	&= u_x\sum_{k=0}^t 0.99^k\\
 	&= u_x(\frac{1-0.99^t}{1-0.99}) &\quad\quad\text{Sum of GS}\\
 	&= 100u_x(1-0.99^t)
-\end{align}
+\end{align*}
 $$
 There will be a flight distance limit, if $t\to\infty$. (Assume constant height, $\Delta y_t$ = 0)
 $$
-\begin{align}
+\begin{align*}
 \lim_{t\to\infty}S_x(t) &= \lim_{t\to\infty}\sum_{k=0}^t \Delta x_k\\
 	&= \lim_{t\to\infty}u_x\sum_{k=0}^t 0.99^k\\
 	&= u_x \frac{1}{1-0.99}\\
 	&= 100u_x
-\end{align}
+\end{align*}
 $$
 Same goes for Z direction.
 
@@ -180,17 +180,17 @@ Same goes for Z direction.
 
 The Y direction have both **pearl drag** and **gravity**. It takes some more steps to tackle it.
 $$
-\begin{align}
+\begin{align*}
 \Delta y_{0} &= u_y\\
 \Delta y_{1} &= 0.99 u_y - 0.03\\
 \Delta y_{2} &= 0.99 (\Delta y_{1}) - 0.03\\
 \Delta y_{3} &= 0.99 (\Delta y_{2}) - 0.03\\
 \vdots
-\end{align}
+\end{align*}
 $$
 Simplifying the expression
 $$
-\begin{align}
+\begin{align*}
 x_1 &= ax + b	&\text{Consider variables $a,b,x_t$}\\
 x_2 &= ax_1 + b\\
 	&= a(ax + b) + b\\
@@ -213,93 +213,93 @@ aP(k)+b 		&= a(a^kx+b(\frac{1-a^{k}}{1-a})) + b\\
 &\therefore\text{$P(k) \to P(k+1)$ is true.}\\\\
 
 &\therefore\text{$x_n \equiv a^nx+b(\frac{1-a^{n}}{1-a})$}\\
-\end{align}
+\end{align*}
 $$
 Subsititude $a=0.99,b=-0.03$.
 $$
-\begin{align}
+\begin{align*}
 \Delta y_{t} &= 0.99^tu_y-0.03(\frac{1-0.99^t}{1-0.99})\\
 \Delta y_{t} &= 0.99^tu_y-3(1-0.99^t)\\
 \Delta y_{t} &= 0.99^t(u_y+3)-3
-\end{align}
+\end{align*}
 $$
 
 ###### Trajectory formula on Y axis
 
 $$
-\begin{align}
+\begin{align*}
 S_y(t) &= 	\sum_{\tau=0}^t \Delta y_{\tau} \\
 	&=	\sum_{\tau=0}^t 0.99^\tau(u_y+3)-3\\
 	&=	(u_y+3)(\frac{1-0.99^t}{1-0.99})-3t\\
 	&=	100(u_y+3)(1-0.99^t)-3t\\
-\end{align}
+\end{align*}
 $$
 
 ## Plotting the trajectory curve
 
 We have obtained these trajectory formulas for individual components. $L_{xz}(t)$ is the total distance travelled on the X-Z plane.
 $$
-\begin{align}
+\begin{align*}
 S_x(t) = x(t)	&=	100u_x(1-0.99^t)\\
 S_y(t) = y(t)	&=	100(u_y+3)(1-0.99^t)-3t\\
 S_z(t) = z(t)	&=	100u_z(1-0.99^t)\\
 L_{xz}(t)		&=	\sqrt{S_x^2(t) + S_z^2(t)}\\
 				&=	\sqrt{x^2(t) + z^2(t)}\\
 				&=	100(1-0.99^t)\sqrt{u_x^2 + u_z^2}
-\end{align}
+\end{align*}
 $$
 
 ### X-Y plane
 
 We want to plot $y(x)$. To plot this, we first find inverse of $x(t)$ to resolve $t=x^{-1}(x)$.
 $$
-\begin{align}
+\begin{align*}
 x(t) &= 100u_x(1-0.99^t)\\
 \frac{x(t)}{100u_x} &= 1-0.99^t\\
 0.99^t &= 1-\frac{x(t)}{100u_x}\\
 t(x) &= \log_{0.99}{(1-\frac{x}{100u_x})} &\text{Inverse of $x(t)$}\\
-\end{align}
+\end{align*}
 $$
 Now to plot it we can simply subsititude $t=t(x)$ to get $y(t)$
 $$
-\begin{align}
+\begin{align*}
 y(t)	&=	100(u_y+3)(1-0.99^t)-3t\\
 y(t(x)) 	&=	100(u_y+3)(1-0.99^{t(x)})-3t(x)
-\end{align}
+\end{align*}
 $$
 To link up all, where $t(x) = \log_{0.99}{(1-\frac{x}{100u_x})}$
 $$
-\begin{align}
+\begin{align*}
 y(t(x)) 	&=	100(u_y+3)(1-0.99^{t(x)})-3t(x)\\
 y(x) 	&=	100(u_y+3)(1-0.99^{\frac{\log(1-\frac{x}{100u_x})}{\log(99)-2}})-3\frac{\log(1-\frac{x}{100u_x})}{\log(99)-2}\\
-\end{align}
+\end{align*}
 $$
 
 ### $L_{xz}$-Y plane
 
 The method of deriving is very similar to the way we derived X-Y plane. The only difference would be considering $L_{xz}(t)$ instead of $x(t)$.
 $$
-\begin{align}
+\begin{align*}
 L_{xz}(t)	&=	100(1-0.99^t)\sqrt{u_x^2 + u_z^2}			\\
 \frac{L_{xz}(t)}{100\sqrt{u_x^2 + u_z^2}}	&=	1-0.99^t		\\
 0.99^t		&=	1-\frac{L_{xz}(t)}{100\sqrt{u_x^2 + u_z^2}}	\\
 t(L_{xz}) 	&= \log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})} &\text{Inverse of $L_{xz}(t)$}\\
-\end{align}
+\end{align*}
 $$
 Subsititude it to $y(t)$ where $t= t(L_{xz})$.
 $$
-\begin{align}
+\begin{align*}
 y(t)	&=	100(u_y+3)(1-0.99^t)-3t\\
 y(t(L_{xz})) 	&=	100(u_y+3)(1-0.99^{t(L_{xz})})-3t(L_{xz})
-\end{align}
+\end{align*}
 $$
 One step further, but often unnecessary,
 $$
-\begin{align}
+\begin{align*}
 y(t(L_{xz})) 	&=	100(u_y+3)(1-0.99^{t(L_{xz})})-3t(L_{xz})	\\
 y(L_{xz}) 	&=	100(u_y+3)(1-0.99^{\log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})}})-3\log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})}\\
 &=	100(u_y+3)(\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})-3\log_{0.99}{(1-\frac{L_{xz}}{100\sqrt{u_x^2 + u_z^2}})}\\
-\end{align}
+\end{align*}
 $$
 
 #### Result (Desmos)
@@ -311,11 +311,11 @@ $$
 
 Consider the following
 $$
-\begin{align}
+\begin{align*}
 \Delta x_1 &= \alpha u_x\\
 \Delta y_1 &= \alpha u_y + g\\
 \Delta z_1 &= \alpha u_z
-\end{align}
+\end{align*}
 $$
 In the previous section, we have derived the particular solution for $\alpha=0.99, g=-0.03$. In this section, we will make our attempt to obtain a general solution.
 
@@ -323,11 +323,11 @@ In the previous section, we have derived the particular solution for $\alpha=0.9
 
 The displacement differentials are very similar as before. $t$ represents the number of game ticks eplased.
 $$
-\begin{align}
+\begin{align*}
 \Delta x_t &= \alpha^t u_x\\
 \Delta y_t &= \alpha^t u_y + g \frac{1-\alpha^t}{1-\alpha}\\
 \Delta z_t &= \alpha^t u_z
-\end{align}
+\end{align*}
 $$
 
 ### Components of trajectory
@@ -338,7 +338,7 @@ Similar as before, the trajectory is the sum of displacement differentials from 
 
 Following the same notation as above, $S_x(t)=x(t), S_z(t)=z(t), L_{xz}(t)=\sqrt{x^2(t)+z^2(t)}$
 $$
-\begin{align}
+\begin{align*}
 x(t) 		&= \sum_{\tau=0}^t \alpha^\tau u_x\\
 			&= u_x\sum_{\tau=0}^t\alpha^\tau\\
 			&= u_x \frac{1-\alpha^t}{1-\alpha}\\
@@ -350,14 +350,14 @@ z(t) 		&= \sum_{\tau=0}^t \alpha^\tau u_z\\
 L_{xz}(t) 	&= \sqrt{x^2(t)+z^2(t)}\\
 			&= \sqrt{(u_x \frac{1-\alpha^t}{1-\alpha})^2+(u_z \frac{1-\alpha^t}{1-\alpha})^2}\\
 			&= \frac{1-\alpha^t}{1-\alpha}\sqrt{u_x^2+u_z^2}
-\end{align}
+\end{align*}
 $$
 
 #### Y direction
 
 Deriving Y-direction takes a little bit of hard work and extra attention. ~~I must not say I was way too careless~~
 $$
-\begin{align}
+\begin{align*}
  S_y(t)&=y(t) \\
 y(t)	&=	\sum_{\tau=0}^t (\alpha^\tau u_y+g(\frac{1-\alpha^\tau}{1-\alpha}))\\
 		&=	u_y\sum_{\tau=0}^t \alpha^\tau + \frac{g}{1-\alpha}\sum_{\tau=0}^t(1-\alpha^\tau)\\
@@ -365,7 +365,7 @@ y(t)	&=	\sum_{\tau=0}^t (\alpha^\tau u_y+g(\frac{1-\alpha^\tau}{1-\alpha}))\\
 		&=	u_y\frac{1-\alpha^t}{1-\alpha} + \frac{gt}{1-\alpha} -\frac{g}{1-\alpha}\frac{1-\alpha^t}{1-a}\\
 		&=	u_y\frac{1-\alpha^t}{1-\alpha} + \frac{gt}{1-\alpha} -g\frac{(1-\alpha^t)}{(1-\alpha)^2}\\
 		&= (u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^t}{1-\alpha}) + \frac{gt}{1-\alpha}
-\end{align}
+\end{align*}
 $$
 
 #### Plotting generalized trajectory on $L_{xz}$-Y plane
@@ -373,27 +373,27 @@ $$
 ##### Derive inverse of $L_{xz}(t) = \sqrt{S_x^2(t)+S_z^2(t)}$
 
 $$
-\begin{align}
+\begin{align*}
 L_{xz}(t) &= \frac{1-\alpha^t}{1-\alpha}\sqrt{u_x^2+u_z^2}\\
 L_{xz}(t)\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}} &=1-\alpha^t\\
 \alpha^t &=1-L_{xz}(t)\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}\\
 t(L_{xz}) &= \log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}}) &\text{Inverse of $L_{xz}(t)$}
-\end{align}
+\end{align*}
 $$
 
 ##### Substitute $t=t(L_{xz})$
 
 $$
-\begin{align}
+\begin{align*}
 y(t)			&= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^t}{1-\alpha}) + \frac{gt}{1-\alpha}\\
 y(t(L_{xz}))	&= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^{t(L_{xz})}}{1-\alpha}) + \frac{gt(L_{xz})}{1-\alpha}
-\end{align}
+\end{align*}
 $$
 
 ##### One last step...
 
 $$
-\begin{align}
+\begin{align*}
 y(t(L_{xz}))	
 &= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^{t(L_{xz})}}{1-\alpha}) + \frac{gt(L_{xz})}{1-\alpha}\\
 &= 	(u_y-\frac{g}{1-\alpha})(\frac{1-\alpha^{\log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}}))}}{1-\alpha}) + \frac{g\log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}})}{1-\alpha}\\
@@ -401,7 +401,7 @@ y(t(L_{xz}))
 &= 	(u_y-\frac{g}{1-\alpha})(\frac{L_{xz}}{\sqrt{u_x^2+u_z^2}}) + \frac{g}{1-\alpha}\log_\alpha({1-L_{xz}\frac{1-\alpha}{\sqrt{u_x^2+u_z^2}}})\\
 \\
 &=\left(u_{y}-\frac{g}{1-\alpha}\right)\left(\frac{L_{xz}}{\sqrt{u_{x}^{2}+u_{z}^{2}}}\right)+\frac{g}{1-\alpha}\log_{\alpha}\left(1-\frac{L_{xz}\left(1-\alpha\right)}{\sqrt{u_{x}^{2}+u_{z}^{2}}}\right)
-\end{align}
+\end{align*}
 $$
 
 ## Author 
