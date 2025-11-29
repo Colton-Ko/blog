@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Auto-increment patch version
+npm version patch --no-git-tag-version
+
+# Stage the updated package.json and package-lock.json
+git add package.json package-lock.json
