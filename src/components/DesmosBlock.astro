@@ -65,6 +65,9 @@ const html = generateDesmosHTML({
 });
 ---
 
+<!-- Resource hints for Desmos performance -->
+<link rel="preconnect" href="https://www.desmos.com" />
+
 <Fragment set:html={html} />
 
 <script is:inline type="module">
@@ -84,3 +87,11 @@ const html = generateDesmosHTML({
     import { initDesmosWidget } from "/scripts/desmos-widget.js";
     initDesmosWidget(uniqueId);
 </script>
+
+<style is:global>
+    /* Performance: Skip rendering off-screen Desmos content */
+    .desmos-container {
+        content-visibility: auto;
+        contain-intrinsic-size: 1px 300px; /* Estimate height to prevent scrollbar jumping */
+    }
+</style>

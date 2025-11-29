@@ -22,64 +22,6 @@ import { ClientRouter } from "astro:transitions";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Resource hints for performance -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-    <link rel="preconnect" href="https://cdn.skypack.dev" />
-    <link rel="preconnect" href="https://www.desmos.com" />
-
-    <!-- Preload critical CSS -->
-    <link
-      rel="preload"
-      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-      as="style"
-      crossorigin="anonymous"
-      integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
-    />
-
-    <!-- KaTeX CSS for math rendering -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-      integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
-      crossorigin="anonymous"
-    />
-
-    <!-- Custom CSS for sans-serif math (fallback) -->
-    <style is:global>
-      /* Force KaTeX to use sans-serif fonts (mimics LaTeX sansmath package) */
-      .katex {
-        font-family: "Computer Modern Sans", "Helvetica Neue", Helvetica, Arial,
-          sans-serif !important;
-      }
-
-      /* Optimize font loading - prevent flash of invisible text */
-      @font-face {
-        font-display: swap;
-      }
-
-      /* Performance: Skip rendering off-screen content */
-      /* Only apply to non-interactive collapsed state */
-      .katex-display:not(.math-block-wrapper .katex-display),
-      .mermaid-container,
-      .desmos-container {
-        content-visibility: auto;
-        contain-intrinsic-size: 1px 300px; /* Estimate height to prevent scrollbar jumping */
-      }
-
-      /* Variables should be italic (mathnormal, mathit) */
-      .katex .mathnormal,
-      .katex .mathit {
-        font-family: "Computer Modern Sans", "Helvetica Neue", Arial, sans-serif !important;
-        font-style: italic !important;
-      }
-
-      /* Roman/upright text should be normal (mathrm) */
-      .katex .mathrm {
-        font-family: "Computer Modern Sans", "Helvetica Neue", Arial, sans-serif !important;
-        font-style: normal !important;
-      }
-    </style>
-
     <!-- Highlight.js CSS for code syntax highlighting -->
     <link
       rel="stylesheet"
